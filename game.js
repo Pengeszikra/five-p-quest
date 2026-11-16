@@ -456,9 +456,11 @@ function switchActor(i) {
 function renderConnection() {
   const bridge=$("place-connection");
   const label=$("connection-label");
-  const docked=!state.mission.launched && !state.mission.inFlight;
+  const docked=!state.mission.inFlight && (state.campaign
+    ? ["return-dock","debrief","reboard","relaunch"].includes(state.campaign.step.id)
+    : !state.mission.launched);
   const open=state.started && $("pick").hidden && docked && canTransfer();
-  const connected=docked && !state.campaign?.step?.flight;
+  const connected=docked;
   bridge.dataset.state=open?"open":connected?"connected":"closed";
   label.textContent=open?"Átjárás szabad":connected?"Dokkolva · zárva":"Nincs kapcsolat";
   for(const button of document.querySelectorAll("[data-map]")) {
