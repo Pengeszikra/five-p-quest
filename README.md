@@ -44,3 +44,9 @@ A rendszer jelenleg egy játékmeneten belül tárolja a társasági állapotot,
 ## Felület
 
 A beszélgetések kizárólag szabad szövegesek: nincs előre megadott témagombsor. A fedélzeti politika panel névvel és helyszínnel jelzi a nyitott `!` eseményeket; a jel csak az adott szereplő térképén jelenik meg. A program saját `favicon.svg` ikont használ.
+
+## Verziózás
+
+A Five Percent Quest a 3Draft dátumalapú formátumát követi: `YY.M.DNNN` (például `26.11.16003` = 2026. november 16., 003. build). Az olvasható alak `26.11.16.003`. A verzió a `package.json` és `version.js` fájlban szerepel, a képernyő alján is látszik.
+
+Új buildhez: `npm run bump`. Csak előnézet: `npm run bump:dry`. A napot a `Europe/Budapest` időzóna alapján számolja. A fejlesztés alapértelmezett célága: `main`.
