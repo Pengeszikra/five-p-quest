@@ -28,3 +28,15 @@ A Vercel projekt **Settings → Environment Variables** részében add hozzá a 
 - A Groq a fedélzeti ügyek eligazítását, az NPC-k válaszait és a döntések rádióban megjelenő következményét a legutóbbi beszélgetésekhez és döntésekhez igazítja. Ha a Groq nem érhető el, a dilemma, a két választható döntés és a kampány továbbra is működik. Az állás a megnyitott játékmenethez tartozik.
 
 `node --test` ellenőrzi a küldetésláncot, a helyszínek elérhetőségét és a Groq kéréseit tesztválaszokkal.
+
+## Fedélzeti politika (crew politics)
+
+A kapitány kijelölésekor a 64 karakter bármelyike választható. A választott kapitány automatikusan az 1–3 irányítható szereplő egyike lesz. A fő küldetés kérdőjelei (`?`) mellett rózsaszín felkiáltójelek (`!`) mutatják a kapcsolati eseményeket.
+
+- Irányított, részben hiányos kapcsolati háló: a bizalom nem kölcsönös és nem minden szereplő ismer mindenkit.
+- Szakmai nézeteltérések, rivalizálás, támogatás, pletykák; választható, tényleges következményekkel.
+- Tekintély és bizalmatlanság kijelző. Súlyos konfliktusból bizalmi szavazás, lemondás vagy alkalmassági próba lehet.
+- Leváltás után nem ér véget a játék: a következő kapitány átveszi a posztot, a korábbi szereplő továbbra is irányítható.
+- Mindez Groq nélkül is működik. A generált párbeszéd megkapja a hiteles társasági állapotot, de nem módosíthatja tetszőlegesen a kapcsolatokat.
+
+A rendszer jelenleg egy játékmeneten belül tárolja a társasági állapotot, nem perzisztens. A politikai események a meglévő kampány mellett futnak, nem cserélik le annak 70 konfliktusát. Ellenőrzés: `node --test`.
