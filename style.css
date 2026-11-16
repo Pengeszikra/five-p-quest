@@ -152,3 +152,22 @@ kbd{border:1px solid #40505a;border-radius:3px;padding:1px 3px;margin-right:2px;
 
 .politics .politics-event{color:#f2b9e6;font-size:11px;margin-top:5px;padding:4px 6px;border-left:2px solid #d899c9;background:#3b293b}
 .footer .legend-social{background:#f4b4e3;color:#462040;font-style:normal;border-radius:2px;width:11px;height:14px;line-height:14px;text-align:center;font-weight:800}
+
+/* Independent map and dialogue scrolling: the page must not grow with chat content. */
+.workspace{height:calc(100dvh - 160px);min-height:380px;align-items:stretch}
+.map-panel,.side-panel{height:100%;min-height:0}
+.map-panel{display:flex;flex-direction:column;overflow:hidden}
+.map-top,.map-bottom{flex:none}
+.map-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+.side-panel{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-color:#687a80 #192126}
+.side-panel .panel-content{min-width:0}
+@media(max-width:770px){
+  .workspace{height:calc(100dvh - 125px);min-height:360px;grid-template-rows:minmax(0,48%) minmax(0,52%)}
+  .map-panel,.side-panel{height:100%;min-height:0}
+  .side-panel{grid-row:2}
+  .workspace:has(#pick:not([hidden])){grid-template-rows:minmax(0,64%) minmax(0,36%)}
+  .workspace:has(#pick:not([hidden])) .side-panel{grid-row:1}
+  .workspace:has(#pick:not([hidden])) .map-panel{grid-row:2}
+  .waiting{min-height:115px}
+}
+@media(max-height:560px){.workspace{height:calc(100dvh - 110px);min-height:250px}}
