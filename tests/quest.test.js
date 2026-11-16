@@ -33,11 +33,24 @@ test("all portraits have accessible positions and three playable characters cann
   vm.runInNewContext(actorsCode+source+`
     assert.equal(placed.size,64);
     for(const map of Object.values(maps)){
-      const blocked=new Set(map.npcs.map(n=>keyOf(n.cell)));
-      const reached=routeMap(map,map.spawn,blocked);
-      assert(reached.has(keyOf(map.exit)));
-      if(map===maps.ship)assert(reached.has(keyOf(questBook.seat)));
-      for(const npc of map.npcs)assert(neighbors(npc.cell).some(c=>canStep(map,c,npc.cell)&&reached.has(keyOf(c))),npc.actor.id);
+      const occupied=map.npcs.map(npc=>npc.cell);
+      const reached=routeMap(map,map.spawn,walkingBlockers(map,occupied));
+      assert(!reached.has(keyOf(map.exit)),"Ordinary paths must avoid the transition tile");
+      assert(routeMap(map,map.spawn,walkingBlockers(map,occupied,map.exit)).has(keyOf(map.exit)));
+      if(map===maps.ship) {
+        assert(!reached.has(keyOf(questBook.seat)),"Ordinary paths must avoid the command seat");
+        assert(routeMap(map,map.spawn,walkingBlockers(map,occupied,questBook.seat)).has(keyOf(questBook.seat)));
+      }
+      for(const npc of map.npcs)assert(approaches(map,npc.cell,reached).length>0,npc.actor.id);
+    }
+    const map=maps.wyoming;
+    const director=map.npcs.find(npc=>npc.actor.id==="up.mission-director");
+    const safety=map.npcs.find(npc=>npc.actor.id==="up.safety-officer");
+    const blockers=walkingBlockers(map,map.npcs.map(npc=>npc.cell));
+    const fromSpawn=routeMap(map,map.spawn,blockers);
+    for(const fromBar of approaches(map,director.cell,fromSpawn)){
+      const reached=routeMap(map,fromBar,blockers);
+      assert(approaches(map,safety.cell,reached).length>0,"Safety officer must be reachable from the briefing with boarding still locked");
     }
     for(const [index,step] of questBook.steps.entries()){
       if(!step.givers)continue;

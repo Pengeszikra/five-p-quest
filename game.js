@@ -76,6 +76,15 @@ function routeMap(map,start,blocked) {
   }
   return found;
 }
+function walkingBlockers(map, occupied, destination) {
+  const blocked=new Set(occupied.map(keyOf));
+  if(!destination||!equal(destination,map.exit))blocked.add(keyOf(map.exit));
+  if(map===maps.ship&&(!destination||!equal(destination,questBook.seat)))blocked.add(keyOf(questBook.seat));
+  return blocked;
+}
+function approaches(map, destination, reached) {
+  return neighbors(destination).filter(cell=>canStep(map,cell,destination)&&reached.has(keyOf(cell)));
+}
 function assignNpcs(map) {
   const reserved=new Set([map.spawn,map.entry,map.exit].map(keyOf));
   if(map===maps.ship)reserved.add(keyOf(questBook.seat));
@@ -96,9 +105,10 @@ function assignNpcs(map) {
       if(!actor || placed.has(actor.id)) throw new Error("Ismétlődő vagy hiányzó szereplő.");
       const match=options.findIndex(({cell})=>{
         const occupied=[...list.map(n=>n.cell),cell];
-        const reached=routeMap(map,map.spawn,new Set(occupied.map(keyOf)));
-        return reached.has(keyOf(map.entry)) && reached.has(keyOf(map.exit)) &&
-          (map!==maps.ship||reached.has(keyOf(questBook.seat))) && occupied.every(c=>neighbors(c).some(next=>canStep(map,c,next)&&reached.has(keyOf(next))));
+        const reached=routeMap(map,map.spawn,walkingBlockers(map,occupied));
+        return reached.has(keyOf(map.entry)) && approaches(map,map.exit,reached).length>0 &&
+          (map!==maps.ship||approaches(map,questBook.seat,reached).length>0) &&
+          occupied.every(cell=>approaches(map,cell,reached).length>0);
       });
       if(match<0) throw new Error("Nincs elérhető hely: "+actor.id);
       const [{cell}]=options.splice(match,1);
@@ -356,8 +366,8 @@ function begin() {
   if(!state.started) state.positions=Object.fromEntries(Object.entries(maps).map(([id,map])=>[id,[...map.spawn]]));
   state.started=true;
   for(const [id,map] of Object.entries(maps)) {
-    const blocked=new Set(map.npcs.filter(n=>!state.chosen.includes(n.actor.id)).map(n=>keyOf(n.cell)));
-    const reachable=routeMap(map,map.spawn,blocked);
+    const occupied=map.npcs.filter(npc=>!state.chosen.includes(npc.actor.id)).map(npc=>npc.cell);
+    const reachable=routeMap(map,map.spawn,walkingBlockers(map,occupied,state.positions[id]));
     if(!reachable.has(keyOf(state.positions[id]))) state.positions[id]=[...map.spawn];
   }
   $("pick").hidden=true;$("play").hidden=false;
@@ -430,11 +440,8 @@ function go(dest,npc) {
   stopRoute();
   const mark=state.pathId;
   const map=currentMap();
-  const crowd=currentNpcs();
-  const blocked=new Set(crowd.map(n=>keyOf(n.cell)));
-  if (!equal(dest,map.exit)) blocked.add(keyOf(map.exit));
-  if(map===maps.ship&&objective().kind==="flight"&&!equal(dest,questBook.seat))blocked.add(keyOf(questBook.seat));
-  const reached=routeMap(map,position(),blocked);
+  const occupied=currentNpcs().map(npc=>npc.cell);
+  const reached=routeMap(map,position(),walkingBlockers(map,occupied,dest));
   let target=dest;
   if(npc) {
     const distance=(cell)=>{
@@ -442,9 +449,9 @@ function go(dest,npc) {
       for(let prev=reached.get(keyOf(cell));prev;prev=reached.get(keyOf(prev)))count++;
       return count;
     };
-    const approaches=neighbors(dest).filter(cell=>canStep(map,cell,dest)&&reached.has(keyOf(cell)));
-    approaches.sort((a,b)=>distance(a)-distance(b));
-    target=approaches[0];
+    const options=approaches(map,dest,reached);
+    options.sort((a,b)=>distance(a)-distance(b));
+    target=options[0];
   }
   if(!target||!reached.has(keyOf(target))){tell("Arra fal van, vagy most nem férsz el.");return;}
   const steps=[];
