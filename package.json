@@ -4,6 +4,9 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "start": "node server.mjs",
-    "test": "node --test"
-  }
+    "test": "node --test",
+    "bump": "node scripts/bump.mjs",
+    "bump:dry": "node scripts/bump.mjs --dry"
+  },
+  "version": "26.11.16003"
 }
