@@ -40,3 +40,7 @@ A kapitány kijelölésekor a 64 karakter bármelyike választható. A választo
 - Mindez Groq nélkül is működik. A generált párbeszéd megkapja a hiteles társasági állapotot, de nem módosíthatja tetszőlegesen a kapcsolatokat.
 
 A rendszer jelenleg egy játékmeneten belül tárolja a társasági állapotot, nem perzisztens. A politikai események a meglévő kampány mellett futnak, nem cserélik le annak 70 konfliktusát. Ellenőrzés: `node --test`.
+
+## Felület
+
+A beszélgetések kizárólag szabad szövegesek: nincs előre megadott témagombsor. A fedélzeti politika panel névvel és helyszínnel jelzi a nyitott `!` eseményeket; a jel csak az adott szereplő térképén jelenik meg. A program saját `favicon.svg` ikont használ.
