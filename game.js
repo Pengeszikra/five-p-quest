@@ -374,6 +374,13 @@ function renderPolitics(){
     " · Ellenfelek: "+politics.opponents()+" · Nyitott ügyek: "+politics.state.events.length;
   const msg=document.createElement("p");msg.textContent=politics.state.lastMessage;
   panel.append(title,info,bar,note,msg);
+  for(const event of politics.state.events.slice(0,4)){
+    const actor=actorById.get(event.actorId);
+    const place=Object.entries(maps).find(([,map])=>map.npcs.some(npc=>npc.actor.id===event.actorId));
+    const hint=document.createElement("p");hint.className="politics-event";
+    hint.textContent="! "+actor.name+" · "+(place?.[1].title||"fedélzet")+" · "+event.title;
+    panel.append(hint);
+  }
 }
 function renderSocialOffer(){
   const panel=$("social-offer");panel.replaceChildren();
@@ -543,12 +550,6 @@ const sayings={
   "crew.chief-engineer":"Ha szerelni jöttél, a nyolcas ott van. Ha beszélgetni, van egy percem.",
   "up.snp-physicist":"Épp két mérés közé estél. Van kedved belenézni, vagy inkább kérdeznél?",
 };
-const topics=[
-  {id:"work",label:"Mi a munkád?"},
-  {id:"mood",label:"Mi foglalkoztat?"},
-  {id:"drive",label:"Mit tudsz az SNP-ről?"},
-  {id:"place",label:"Mi van itt?"},
-];
 const topicWords={
   work:/munk|foglalkoz|beosztas|mi a dolgod|mit csinalsz|szereped/,
   drive:/snp|hajtas|inverzit|eredet|ki talalta|up tech|technolog/,
@@ -665,7 +666,7 @@ function paintAiStatus() {
   $("ai-status").textContent=busy?"A válasz készül…":
     result?.model?"Groq · "+result.model:
     result?.offline||ai.status==="off"||ai.status==="error"?"Helyi válasz":"Groq-párbeszéd";
-  for(const button of document.querySelectorAll("#topics button, #chat-form button"))button.disabled=busy;
+  for(const button of document.querySelectorAll("#chat-form button"))button.disabled=busy;
 }
 
 async function configureAi() {
@@ -945,7 +946,6 @@ $("chat-form").addEventListener("submit",(event)=>{
   ask(input.value.trim());
   input.value="";
 });
-for(const topic of topics)$("topics").append(makeButton(topic.label,()=>ask(topic.label,topic.id)));
 document.querySelectorAll("[data-map]").forEach(b=>b.addEventListener("click",()=>switchMap(b.dataset.map)));
 document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>takeStep(b.dataset.move)));
 $("map").tabIndex=0;
