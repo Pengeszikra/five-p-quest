@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Magyar nyelvű Five Percent küldetéspróba a Wyomingon és a 7-es Kvadránson.">
+<meta name="theme-color" content="#151b20">
+<title>Five Percent · Quest próba</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="actors.js"></script>
+<script defer src="quest.js"></script>
+<script defer src="game.js"></script>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="wordmark"><span class="mark" aria-hidden="true">5<span>%</span></span><div><p>FIVE PERCENT</p><h1>Quest próba</h1></div></div>
+    <div class="groq-badge" id="groq-badge" data-mode="checking" role="status"><span class="signal"></span><strong>Groq</strong><span id="groq-state">Ellenőrzés…</span></div>
+  </header>
+
+  <main class="workspace">
+    <section class="map-panel" aria-labelledby="map-name">
+      <div class="map-top">
+        <div class="map-title"><p id="map-code">WU–3463</p><h2 id="map-name">Wyoming</h2></div>
+        <nav class="places" aria-label="Helyszín">
+          <button type="button" data-map="wyoming" aria-pressed="true">Wyoming</button>
+          <button type="button" data-map="ship" aria-pressed="false">7-es Kvadráns</button>
+        </nav>
+      </div>
+      <div class="map-scroll" id="map-scroll">
+        <div class="map" id="map" aria-label="Kockáspapíros alaprajz">
+          <canvas id="plan" width="1000" height="600" aria-hidden="true"></canvas>
+          <div id="tokens" class="tokens"></div>
+          <div class="flight-overlay" id="flight-overlay" hidden>
+            <div class="flight-window">
+              <p class="eyebrow">7-ES KVADRÁNS · REPÜLÉSI NAPLÓ</p>
+              <div class="flight-plot" aria-hidden="true"><div class="flight-track"><span id="flight-marker">◆</span></div></div>
+              <h3 id="flight-route"></h3>
+              <progress id="flight-progress" max="100" value="0" aria-label="Utazás állapota"></progress>
+              <p id="flight-phase" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="map-bottom">
+        <p id="map-help">Jelölj ki legfeljebb három szereplőt az induláshoz.</p>
+        <div class="movement" aria-label="Mozgásvezérlők">
+          <button type="button" data-move="left" aria-label="Balra">←</button>
+          <button type="button" data-move="up" aria-label="Fel">↑</button>
+          <button type="button" data-move="down" aria-label="Le">↓</button>
+          <button type="button" data-move="right" aria-label="Jobbra">→</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-panel" aria-label="Szereplők és párbeszéd">
+      <section id="pick" class="panel-content">
+        <p class="eyebrow">SZEREPLŐVÁLASZTÁS</p>
+        <h2>Kivel indulsz?</h2>
+        <p class="intro">Válassz 1–3 szereplőt. Játék közben bármelyikükre átválthatsz.</p>
+        <div class="filters" id="filters" aria-label="Szereplőcsoport"></div>
+        <div class="roster" id="roster" aria-label="Választható szereplők"></div>
+        <p id="pick-status" class="pick-status" role="status"></p>
+        <button type="button" class="primary" id="start">Belépés <span aria-hidden="true">↗</span></button>
+      </section>
+      <section id="play" class="panel-content" hidden>
+        <div class="side-head"><div><p class="eyebrow">IRÁNYÍTOTT SZEREPLŐ</p><h2 id="active-name"></h2></div><button type="button" id="reselect" class="quiet">Csere</button></div>
+        <div id="party" class="party" aria-label="Irányított szereplő váltása"></div>
+        <section class="mission" aria-labelledby="mission-title">
+          <p class="eyebrow"><span id="mission-counter"></span></p>
+          <h3 id="mission-title"></h3>
+          <p id="mission-goal"></p>
+        </section>
+        <details id="comms" class="comms" hidden>
+          <summary>Fedélzeti rádió <span id="comms-count"></span></summary>
+          <div id="comms-log" class="comms-log" aria-live="polite"></div>
+        </details>
+        <div class="conversation" id="conversation" hidden>
+          <div class="contact"><div id="contact-art"></div><div><p class="eyebrow" id="contact-location"></p><h3 id="contact-name"></h3></div><button type="button" id="close-chat" class="close" aria-label="Beszélgetés lezárása">×</button></div>
+          <div class="ai-status"><span id="ai-status" role="status"></span></div>
+          <div id="quest-offer" class="quest-offer" hidden></div>
+          <div id="log" class="log" role="log" aria-label="Beszélgetés" aria-live="polite" tabindex="0"></div>
+          <div id="topics" class="topics" aria-label="Beszédtémák"></div>
+          <form id="chat-form"><label class="sr-only" for="chat-input">Saját kérdés</label><input id="chat-input" type="text" placeholder="Írj egy kérdést…" autocomplete="off" maxlength="220"><button type="submit" aria-label="Küldés">↑</button></form>
+        </div>
+        <div id="waiting" class="waiting">
+          <div class="waiting-glyph" aria-hidden="true">…</div>
+          <h3>Ki jár erre?</h3>
+          <p>Lépj neki egy figurának, vagy kattints a portréjára. Ha odaérsz, itt indul a beszélgetés.</p>
+        </div>
+        <p id="game-status" class="sr-only" role="status"></p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer"><span><i class="legend-player"></i> Te <i class="legend-person"></i> Beszélgetőpartner <i class="legend-door"></i> Átjáró <i class="legend-quest">?</i> Küldetés</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> vagy nyilak <b>·</b> <kbd>Esc</kbd> bezárás</span></footer>
+</div>
+</body>
+</html>

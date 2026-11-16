@@ -1,0 +1,2 @@
+# Másold ai-config.txt néven, és írd be a Groq Console-ban létrehozott kulcsot.
+GROQ_API_KEY=

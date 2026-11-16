@@ -1,0 +1,8 @@
+{
+  "name": "five-p-quest",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test"
+  }
+}
