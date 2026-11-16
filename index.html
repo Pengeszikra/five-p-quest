@@ -11,6 +11,7 @@
 <script defer src="quest.js"></script>
 <script defer src="conflicts.js"></script>
 <script defer src="campaign.js"></script>
+<script defer src="social.js"></script>
 <script defer src="game.js"></script>
 </head>
 <body>
@@ -59,15 +60,17 @@
       <section id="pick" class="panel-content">
         <p class="eyebrow">SZEREPLŐVÁLASZTÁS</p>
         <h2>Kivel indulsz?</h2>
-        <p class="intro">Válassz 1–3 szereplőt. Játék közben bármelyikükre átválthatsz.</p>
+        <p class="intro">Válassz 1–3 szereplőt. A kapitányt külön is kinevezheted a 64 szereplő közül; a kinevezésnek következményei lesznek.</p>
         <div class="filters" id="filters" aria-label="Szereplőcsoport"></div>
         <div class="roster" id="roster" aria-label="Választható szereplők"></div>
+        <label class="captain-picker">KAPITÁNY KINEVEZÉSE <select id="captain-select" aria-label="Kapitány kinevezése"></select></label>
         <p id="pick-status" class="pick-status" role="status"></p>
         <button type="button" class="primary" id="start">Belépés <span aria-hidden="true">↗</span></button>
       </section>
       <section id="play" class="panel-content" hidden>
         <div class="side-head"><div><p class="eyebrow">IRÁNYÍTOTT SZEREPLŐ</p><h2 id="active-name"></h2></div><button type="button" id="reselect" class="quiet">Csere</button></div>
         <div id="party" class="party" aria-label="Irányított szereplő váltása"></div>
+        <section id="politics-panel" class="politics" hidden aria-label="Fedélzeti viszonyok"></section>
         <section class="mission" aria-labelledby="mission-title">
           <p class="eyebrow"><span id="mission-counter"></span></p>
           <h3 id="mission-title"></h3>
@@ -80,6 +83,7 @@
         <div class="conversation" id="conversation" hidden>
           <div class="contact"><div id="contact-art"></div><div><p class="eyebrow" id="contact-location"></p><h3 id="contact-name"></h3></div><button type="button" id="close-chat" class="close" aria-label="Beszélgetés lezárása">×</button></div>
           <div class="ai-status"><span id="ai-status" role="status"></span></div>
+          <div id="social-offer" class="social-offer" hidden></div>
           <div id="quest-offer" class="quest-offer" hidden></div>
           <div id="log" class="log" role="log" aria-label="Beszélgetés" aria-live="polite" tabindex="0"></div>
           <div id="topics" class="topics" aria-label="Beszédtémák"></div>
