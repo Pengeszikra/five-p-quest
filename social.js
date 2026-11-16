@@ -76,11 +76,11 @@
       if(p>=85&&s.outcome==="active"){
         s.outcome="challenge";
         const leader=eligible().slice().sort((a,b)=>relation(a,s.captain)-relation(b,s.captain))[0];
-        if(leader)enqueue(leader,"mutiny","Bizalmatlansági indítvány","A legénység egy része új kapitányt akar. A döntés nem kerülhető el.",[
+        if(leader){s.events=s.events.filter(e=>e.actorId!==leader);enqueue(leader,"mutiny","Bizalmatlansági indítvány","A legénység egy része új kapitányt akar. A döntés nem kerülhető el.",[
           {id:"vote",label:"Tarts nyílt bizalmi szavazást",trust:10,authority:8},
           {id:"resign",label:"Add át a parancsnokságot",trust:5,authority:-15},
           {id:"defend",label:"Bizonyítsd az alkalmasságodat",trust:4,authority:4},
-        ]);
+        ]);}
       }
     }
     function activity(kind="conversation",id) {
