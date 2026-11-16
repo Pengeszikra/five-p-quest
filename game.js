@@ -273,9 +273,8 @@ function renderRoster(resetScroll=false) {
 }
 function renderMap() {
   const map=currentMap();
-  $("map-name").textContent=map.title;
-  $("map-code").textContent=map.code;
   document.querySelectorAll("[data-map]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.map===state.mapId)));
+  renderConnection();
   sketchMap(map);
   const tokens=$("tokens");
   tokens.replaceChildren();
@@ -446,7 +445,6 @@ function begin() {
   state.hint="";
   renderParty();renderMap();
   revealPlayer(true);
-  if(matchMedia("(max-width: 770px)").matches)$("map-scroll").scrollIntoView({block:"nearest"});
 }
 function switchActor(i) {
   if(state.mission.inFlight||state.chosen[i]===undefined||state.chosen[i]===state.active)return;
@@ -454,6 +452,20 @@ function switchActor(i) {
   state.active=state.chosen[i];
   state.hint="";
   renderParty();renderMap();
+}
+function renderConnection() {
+  const bridge=$("place-connection");
+  const label=$("connection-label");
+  const docked=!state.mission.launched && !state.mission.inFlight;
+  const open=state.started && $("pick").hidden && docked && canTransfer();
+  const connected=docked && !state.campaign?.step?.flight;
+  bridge.dataset.state=open?"open":connected?"connected":"closed";
+  label.textContent=open?"Átjárás szabad":connected?"Dokkolva · zárva":"Nincs kapcsolat";
+  for(const button of document.querySelectorAll("[data-map]")) {
+    const accessible=button.dataset.map===state.mapId || open || !state.started;
+    button.title=button.dataset.map==="wyoming"?"Wyoming állomás":"7-es Kvadráns";
+    button.setAttribute("aria-description",accessible?"Helyszín kiválasztása":"Az átjáró jelenleg nem használható");
+  }
 }
 function canTransfer() {
   if(state.campaign)return !state.mission.inFlight&&objective().kind==="gate"&&objective().map===state.mapId;
@@ -476,13 +488,8 @@ function switchMap(id,viaGate=false) {
   renderMap();
   if(state.started&&$("pick").hidden)revealPlayer(true);
 }
-function revealPlayer(force=false) {
-  const scroller=$("map-scroll");
-  const player=$("player-token");
-  if(!player)return;
-  const width=scroller.clientWidth;
-  const x=((position()[0]+.5)/columns)*$("map").offsetWidth;
-  if(force || x<scroller.scrollLeft+38 || x>scroller.scrollLeft+width-38)scroller.scrollLeft=x-width/2;
+function revealPlayer() {
+  // The full map always fits in the stage; no viewport panning or scrolling.
 }
 function stopRoute(){state.pathId++;}
 function moveTo(cell) {
@@ -578,7 +585,6 @@ function openChat(npc) {
   if(objective().conflict&&npc.actor.id===questGiver())requestEpisodeBrief(objective(),npc);
   tell("Beszélgetés · "+npc.actor.name);
   $("close-chat").focus({preventScroll:true});
-  if(matchMedia("(max-width: 770px)").matches)$("conversation").scrollIntoView({block:"nearest"});
 }
 function greetingFor(actor) {
   if(actor.id.startsWith("robot."))return actor.work;
@@ -598,7 +604,6 @@ function closeChat(returnFocus=false) {
   tell("");
   if(returnFocus){
     $("map").focus({preventScroll:true});
-    if(matchMedia("(max-width: 770px)").matches)$("map-scroll").scrollIntoView({block:"nearest"});
   }
 }
 function paintLog() {
@@ -759,10 +764,9 @@ function renderMission() {
   $("mission-title").textContent=step.title;
   $("mission-goal").textContent=step.goal;
   document.querySelectorAll("[data-map]").forEach(button=>{
-    button.disabled=state.mission.inFlight||(state.campaign
-      ? button.dataset.map!==state.mapId&&!canTransfer()
-      : state.mission.launched&&button.dataset.map==="wyoming");
+    button.disabled=state.mission.inFlight || (state.started && button.dataset.map!==state.mapId && !canTransfer());
   });
+  renderConnection();
 }
 
 function renderQuestOffer() {
