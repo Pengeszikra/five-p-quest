@@ -149,3 +149,6 @@ kbd{border:1px solid #40505a;border-radius:3px;padding:1px 3px;margin-right:2px;
 .social-offer button{padding:8px;border:1px solid #9c769c;border-radius:5px;background:#473648;color:#f9e9f5;text-align:left}
 .quest-mark.social-mark{background:#f4b4e3;color:#462040;border-color:#95548a}
 .token.social-giver{outline:2px solid #e1a6d8}
+
+.politics .politics-event{color:#f2b9e6;font-size:11px;margin-top:5px;padding:4px 6px;border-left:2px solid #d899c9;background:#3b293b}
+.footer .legend-social{background:#f4b4e3;color:#462040;font-style:normal;border-radius:2px;width:11px;height:14px;line-height:14px;text-align:center;font-weight:800}
