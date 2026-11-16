@@ -9,6 +9,7 @@ const read = (path,encoding) => readFileSync(new URL(path,root),encoding);
 const assets = new Map(Object.entries({
   "/index.html":["index.html","text/html; charset=utf-8"],
   "/favicon.svg":["favicon.svg","image/svg+xml"],
+  "/version.js":["version.js","text/javascript; charset=utf-8"],
   "/style.css":["style.css","text/css; charset=utf-8"],
   "/game.js":["game.js","text/javascript; charset=utf-8"],
   "/social.js":["social.js","text/javascript; charset=utf-8"],
