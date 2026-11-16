@@ -12,6 +12,12 @@ Kulcs nélküli játékhoz önmagában is megnyitható az `index.html`. Node.js 
 
 A helyi szerverhez nincs telepítendő csomag. A kulcsot az `ai-config.txt` fájlban tartsd, az nincs verziókezelésben és a szerver sem szolgálja ki. A Groq az `openai/gpt-oss-120b` modellt futtatja. A fejléc a beállított kulcsot külön jelzi, és sikeres modellválasz után zöld **Aktív** jelzésre vált. A válasznál és a rádióüzenetnél is látszik a modell forrása. Kulcs vagy elérhető modell nélkül az előre megírt magyar válaszok működnek.
 
+## Vercel
+
+Importáld ezt a repót a Vercelbe. A gyökérmappában lévő `vercel.json` kiválasztja az **Other** presetet, és beállítja a buildet, a `dist` mappát és az `/api/dialogue` Node.js végpontot.
+
+A Vercel projekt **Settings → Environment Variables** részében add hozzá a `GROQ_API_KEY` kulcsot a **Production** környezethez. Jelöld be a **Preview** környezetet is, ha előnézetben is kérsz AI-válaszokat. A beállítás a következő deploymentre érvényes. A helyi `ai-config.txt` kizárólag a helyi szerver beállítása.
+
 ## Játék
 
 - WASD, nyilak vagy kattintás. Lépj neki egy szereplőnek a beszélgetéshez. Az 1–3 billentyű vált a kiválasztott figurák között.

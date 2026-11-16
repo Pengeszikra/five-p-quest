@@ -2,6 +2,7 @@ import {createServer} from "node:http";
 import {readFileSync} from "node:fs";
 import {Readable} from "node:stream";
 import {createDialogue} from "./lib/dialogue.mjs";
+import {actors} from "./lib/actors.mjs";
 
 const root = new URL("./",import.meta.url);
 const read = (path,encoding) => readFileSync(new URL(path,root),encoding);
@@ -15,8 +16,6 @@ const assets = new Map(Object.entries({
     "/portraits/"+id+".webp",["portraits/"+id+".webp","image/webp"],
   ])),
 }));
-const actorsSource=read("actors.js","utf8");
-const actors=new Map(JSON.parse(actorsSource.slice("const actors = ".length).trimEnd().slice(0,-1)).map(actor=>[actor.id,actor]));
 
 function loadKey() {
   if(process.env.GROQ_API_KEY!==undefined)return process.env.GROQ_API_KEY.trim();

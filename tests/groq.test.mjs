@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
-import {readFileSync} from "node:fs";
+import {actors} from "../lib/actors.mjs";
 import {createDialogue, MODEL} from "../lib/dialogue.mjs";
 
-const src=readFileSync(new URL("../actors.js",import.meta.url),"utf8");
-const actors=new Map(JSON.parse(src.slice("const actors = ".length).trimEnd().slice(0,-1)).map(a=>[a.id,a]));
 const url="http://127.0.0.1:4173/api/dialogue";
 const npc={actorId:"up.snp-physicist",playerId:"crew.pilot",location:"ship",room:"GÉPTÉR",stage:"survey",message:"Mit mértél?"};
 const post=(handler,body,headers={})=>handler(new Request(url,{method:"POST",headers:{"Content-Type":"application/json",...headers},body:JSON.stringify(body)}));
@@ -52,4 +50,28 @@ test("NPC, Earth and conflict use only Groq and include the correct Hungarian co
 test("failed Groq requests signal fallback",async()=>{
   const handler=createDialogue(actors,"test",async()=>new Response(null,{status:503}));
   assert.equal((await post(handler,npc)).status,502);
+});
+
+test("Vercel uses the Groq runtime environment for the same public API",async(t)=>{
+  const {default:vercel}=await import("../api/dialogue.mjs");
+  const previous=process.env.GROQ_API_KEY;
+  t.after(()=>{
+    if(previous===undefined)delete process.env.GROQ_API_KEY;
+    else process.env.GROQ_API_KEY=previous;
+  });
+  delete process.env.GROQ_API_KEY;
+  const publicUrl="https://five-p-quest.example.vercel.app/api/dialogue";
+  assert.deepEqual(await (await vercel.fetch(new Request(publicUrl))).json(),{providers:[]});
+  process.env.GROQ_API_KEY=" vercel-test-key ";
+  assert.deepEqual(await (await vercel.fetch(new Request(publicUrl))).json(),{providers:["gpt-oss"]});
+  t.mock.method(globalThis,"fetch",async(_url,config)=>{
+    assert.equal(config.headers.authorization,"Bearer vercel-test-key");
+    return Response.json({status:"completed",output:[{type:"message",content:[{type:"output_text",text:"Mérési adatok rendben."}]}]});
+  });
+  const response=await vercel.fetch(new Request(publicUrl,{
+    method:"POST",
+    headers:{"Content-Type":"application/json",Origin:new URL(publicUrl).origin},
+    body:JSON.stringify(npc),
+  }));
+  assert.deepEqual(await response.json(),{reply:"Mérési adatok rendben.",model:MODEL});
 });
