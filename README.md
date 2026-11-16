@@ -50,3 +50,7 @@ A beszélgetések kizárólag szabad szövegesek: nincs előre megadott témagom
 A Five Percent Quest a 3Draft dátumalapú formátumát követi: `YY.M.DNNN` (például `26.11.16003` = 2026. november 16., 003. build). Az olvasható alak `26.11.16.003`. A verzió a `package.json` és `version.js` fájlban szerepel, a képernyő alján is látszik.
 
 Új buildhez: `npm run bump`. Csak előnézet: `npm run bump:dry`. A napot a `Europe/Budapest` időzóna alapján számolja. A fejlesztés alapértelmezett célága: `main`.
+
+## Rögzített játéktér és helyszínkártyák (26.11.16004)
+
+A Wyoming és a 7-es Kvadráns térképe nem görgethető: a teljes 20×12-es alaprajz mindig a rendelkezésre álló játéktérbe illeszkedik. A jobb oldali szereplő- és párbeszédpanel külön görgethető. A felső sáv két képes helyszínkártyája közti vonal jelzi a dokkolt (de zárt), a szabad átjárású és a levált állapotot; a jelző a meglévő küldetés és áthaladási állapotból számolódik.
