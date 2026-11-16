@@ -75,3 +75,32 @@ test("Vercel uses the Groq runtime environment for the same public API",async(t)
   }));
   assert.deepEqual(await response.json(),{reply:"Mérési adatok rendben.",model:MODEL});
 });
+
+test("recurring cases send the NPC's voice, real decisions and recent conversations to Groq",async()=>{
+  const bodies=[];
+  const handler=createDialogue(actors,"test-key",async(_address,options)=>{
+    bodies.push(JSON.parse(options.body));
+    return Response.json({status:"completed",output:[{type:"message",content:[{type:"output_text",text:"A régi adást megőriztük."}]}]});
+  });
+  const story={
+    actorId:"crew.comms-officer",conflictId:"old-news",
+    decisions:[{conflictId:"quiet-window",choice:0,outcome:"A családi kapcsolatot későbbre halasztottuk."},{conflictId:"missing-case",choice:1}],
+    exchanges:[
+      {actorId:"up.snp-physicist",playerId:"crew.pilot",location:"ship",question:"Mi lett a tartalék adóval?",reply:"A tartalék adó nem működik."},
+      {actorId:"up.snp-physicist",playerId:"unknown",location:"ship",question:"Ezt hagyd ki.",reply:"Törölt adat."},
+    ],
+  };
+  assert.equal((await post(handler,{...story,kind:"story-opening"})).status,200);
+  assert.equal((await post(handler,{...story,kind:"story-outcome",option:0})).status,200);
+  assert.equal((await post(handler,{...npc,stage:"episode",conflictId:"old-news",decisions:story.decisions})).status,200);
+  assert.equal((await post(handler,{...story,kind:"story-outcome",option:2})).status,400);
+  assert.equal((await post(handler,{...story,kind:"story-opening",actorId:npc.actorId})).status,400);
+  assert.equal(bodies.length,3);
+  assert.match(bodies[0].instructions,/természetes magyar/);
+  assert.match(bodies[0].input,/ten-year-old Earth broadcast/);
+  assert.match(bodies[0].input,/A tartalék adó nem működik/);
+  assert.match(bodies[0].input,/A családi kapcsolatot későbbre halasztottuk/);
+  assert.doesNotMatch(bodies[0].input,/Ezt hagyd ki/);
+  assert.equal(JSON.parse(bodies[1].input).kiválasztott,"Mentsd le az egész adást");
+  assert.match(bodies[2].input,/ten-year-old Earth broadcast/);
+});

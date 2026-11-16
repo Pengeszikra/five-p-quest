@@ -110,6 +110,8 @@ kbd{border:1px solid #40505a;border-radius:3px;padding:1px 3px;margin-right:2px;
 .mission p:last-child,.quest-offer p,.radio-item p{color:#ded1b8;font-size:12px;line-height:1.5}
 .quest-offer{border:1px solid #74633b;border-radius:6px;background:#353027;padding:8px;margin-top:5px;display:grid;gap:7px}
 .quest-offer p{margin:0}
+.quest-offer ul{margin:0;padding-left:18px;color:#ded1b8;font-size:12px;line-height:1.5}
+.quest-offer small{color:#8bd1c7;font-size:11px}
 .quest-offer button{background:#f2c276;color:#242319;border:0;border-radius:4px;padding:6px 8px;min-height:30px;text-align:left;font-size:12px;font-weight:750}
 .comms{margin-top:8px;border:1px solid #43555d;background:#1b282e;border-radius:6px;color:#c4dbdc;font-size:12px}
 .comms summary{padding:6px 9px;cursor:pointer}

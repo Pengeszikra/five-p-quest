@@ -24,6 +24,7 @@ A Vercel projekt **Settings → Environment Variables** részében add hozzá a 
 - A sárga **?** jelzi az aktuális küldetésadót. Az eligazítás, a biztonsági egyeztetés és a rakományellenőrzés után megnyílik a beszálló. Kövesd a küldetésnaplót.
 - A géptéri hajtáspróba után lépj a híd **parancsnoki állására**. A felszállást és a csillagközi utat rövid 2D repülési szimuláció mutatja. Menet közben a hajón maradsz.
 - A próbakör, az energiaelosztási vita, a Ross 128 b felmérése, a jelentés időzítéséről szóló vita és a földi adás egy végigjátszható menetet alkot. A két döntésed változtat a későbbi rádió- és beszélgetési kontextuson. Felszállás után az UP munkatársai és a legénység földi utasításokat kapnak a **Fedélzeti rádióban**, nagyjából percenként és megérkezéskor, amíg aktív a játékoldal.
-- A Groq az NPC-k hangját, a rádióüzenetek megfogalmazását és a géptér–labor vita szövegét adja. A küldetések állapota a játék szabályai szerint halad.
+- A földi jelentés után a fedélzeti ügyek folytatódnak. A játék a [70 sci-fi konfliktusból](conflicts.md) mind a hetvenet sorra veszi véletlen sorrendben, mielőtt egyet újra elővenne. Három lezárt ügy után a parancsnoki állásról indítható a visszaút a Wyomingra. A dokkolás után add le a döntéseket, szállj vissza a hajóra, és a hídról indítsd el a következő felderítési kört.
+- A Groq a fedélzeti ügyek eligazítását, az NPC-k válaszait és a döntések rádióban megjelenő következményét a legutóbbi beszélgetésekhez és döntésekhez igazítja. Ha a Groq nem érhető el, a dilemma, a két választható döntés és a kampány továbbra is működik. Az állás a megnyitott játékmenethez tartozik.
 
 `node --test` ellenőrzi a küldetésláncot, a helyszínek elérhetőségét és a Groq kéréseit tesztválaszokkal.

@@ -195,14 +195,18 @@ function drawFittings(context,area,p) {
   context.restore();
 }
 
-const state={mapId:"wyoming", filter:0, chosen:[], active:null, started:false, positions:{}, contact:null, pathId:0, logs:new Map(), hint:"",mission:questBook.start(),radio:[],unread:0,groundIndex:0,groundTimer:null};
+const state={mapId:"wyoming", filter:0, chosen:[], active:null, started:false, positions:{}, contact:null, pathId:0, logs:new Map(), hint:"",mission:questBook.start(),radio:[],unread:0,groundIndex:0,groundTimer:null,campaign:null,crewMemory:[],episodeBriefs:new WeakMap()};
 const ai={status:"checking",pending:new Set(),results:new Map()};
 const currentMap=()=>maps[state.mapId];
 const position=()=>state.positions[state.mapId];
 const currentNpcs=()=>currentMap().npcs.filter(npc=>!state.chosen.includes(npc.actor.id));
-const objective=()=>questBook.current(state.mission);
-const questGiver=()=>objective().map===state.mapId
-  ? questBook.giver(state.mission,new Set(currentNpcs().map(npc=>npc.actor.id))) : null;
+const objective=()=>state.campaign?.step??questBook.current(state.mission);
+const questGiver=()=>{
+  const step=objective();
+  if(step.map!==state.mapId||!step.givers)return null;
+  const present=new Set(currentNpcs().map(npc=>npc.actor.id));
+  return step.givers.find(id=>present.has(id))??null;
+};
 const posStyle=(el,[x,y])=>{
   el.style.left=((x+.5)/columns*100)+"%";
   el.style.top=((y+.5)/rows*100)+"%";
@@ -384,18 +388,20 @@ function switchActor(i) {
   renderParty();renderMap();
 }
 function canTransfer() {
+  if(state.campaign)return !state.mission.inFlight&&objective().kind==="gate"&&objective().map===state.mapId;
   return !state.mission.launched&&!state.mission.inFlight&&(state.mission.boarded||objective().kind==="gate");
 }
 function switchMap(id,viaGate=false) {
   if(state.mapId===id)return;
   if(state.started&&!$("pick").hidden&&!viaGate)return;
   if(state.started&&!canTransfer()){
-    tell(state.mission.launched?"A hajó már az űrben van.":"A beszállót a dokkmester nyitja meg.");
+    tell(state.mission.launched?"A hajó már az űrben van.":"Az átjáró még zárva van.");
     return;
   }
   if(state.started&&!viaGate){go(currentMap().exit);return;}
   stopRoute();closeChat();
-  if(viaGate&&state.mapId==="wyoming")questBook.advance(state.mission,"gate");
+  if(viaGate&&state.campaign)campaignBook.advance(state.campaign,"gate");
+  else if(viaGate&&state.mapId==="wyoming")questBook.advance(state.mission,"gate");
   state.mapId=id;
   if(viaGate) state.positions[id]=[...currentMap().entry];
   state.hint="";
@@ -507,6 +513,7 @@ function openChat(npc) {
   }
   paintLog();
   renderQuestOffer();
+  if(objective().conflict&&npc.actor.id===questGiver())requestEpisodeBrief(objective(),npc);
   tell("Beszélgetés · "+npc.actor.name);
   $("close-chat").focus({preventScroll:true});
   if(matchMedia("(max-width: 770px)").matches)$("conversation").scrollIntoView({block:"nearest"});
@@ -646,20 +653,50 @@ async function ask(message,topic) {
   const reply=await requestGroq({
     actorId:npc.actor.id,playerId,location,room:npc.area,history,message,
     stage:objective().id,choice:state.mission.choice,reportChoice:state.mission.reportChoice,order:lastOrder?.text,
+    ...storyContext(),conflictId:objective().conflict?.id,
   });
-  log.push({who:npc.actor.name,text:reply?.reply??fallback,model:reply?.model});
+  const response=reply?.reply??fallback;
+  log.push({who:npc.actor.name,text:response,model:reply?.model});
+  const notes=state.crewMemory;
+  notes.push({actorId:npc.actor.id,playerId,location,question:message.slice(0,160),reply:response.slice(0,220)});
+  if(notes.length>5)notes.shift();
   ai.pending.delete(key);
   ai.results.set(key,reply||{offline:true});
   if(state.contact&&dialogueKey(state.contact)===key)paintLog();
 }
 
+function storyContext() {
+  if(!state.campaign)return {};
+  return {
+    decisions:state.campaign.history.slice(-3),
+    exchanges:state.crewMemory.slice(),
+  };
+}
+
+async function requestEpisodeBrief(step,npc) {
+  let briefs=state.episodeBriefs.get(step);
+  if(!briefs)state.episodeBriefs.set(step,briefs=new Map());
+  if(briefs.has(npc.actor.id))return;
+  briefs.set(npc.actor.id,null);
+  const reply=await requestGroq({
+    kind:"story-opening",actorId:npc.actor.id,conflictId:step.conflict.id,...storyContext(),
+  });
+  briefs.set(npc.actor.id,reply);
+  if(objective()===step&&state.contact===npc)renderQuestOffer();
+}
+
 function renderMission() {
   const step=objective();
-  $("mission-counter").textContent=step.kind==="done"?"KÜLDETÉS TELJESÍTVE":`KÜLDETÉS ${state.mission.index+1}/${questBook.steps.length}`;
+  const campaign=state.campaign;
+  $("mission-counter").textContent=campaign
+    ? `${campaign.voyage}. FELDERÍTÉSI KÖR · ${campaign.total} LEZÁRT ÜGY`
+    : `KÜLDETÉS ${state.mission.index+1}/${questBook.steps.length}`;
   $("mission-title").textContent=step.title;
   $("mission-goal").textContent=step.goal;
   document.querySelectorAll("[data-map]").forEach(button=>{
-    button.disabled=state.mission.inFlight||(state.mission.launched&&button.dataset.map==="wyoming");
+    button.disabled=state.mission.inFlight||(state.campaign
+      ? button.dataset.map!==state.mapId&&!canTransfer()
+      : state.mission.launched&&button.dataset.map==="wyoming");
   });
 }
 
@@ -677,6 +714,24 @@ function renderQuestOffer() {
       :"A megismételt ellenőrzés eredményét külön csatoltuk.");
   }
   panel.append(description);
+  const episodeBrief=state.episodeBriefs.get(step)?.get(npc.actor.id);
+  if(episodeBrief) {
+    const lines=document.createElement("p");
+    lines.textContent=episodeBrief.reply;
+    const source=document.createElement("small");
+    source.textContent="Groq · fedélzeti eligazítás";
+    panel.append(lines,source);
+  }
+  if(step.id==="debrief") {
+    const recap=document.createElement("ul");
+    for(const decision of state.campaign.history.slice(-3)) {
+      const conflict=campaignBook.byId.get(decision.conflictId);
+      const line=document.createElement("li");
+      line.textContent=`${conflict.title} · ${conflict.choices[decision.choice]}`;
+      recap.append(line);
+    }
+    panel.append(recap);
+  }
   if(step.kind==="choice") {
     const debate=state.radio.find(item=>item.kind==="conflict"&&item.stage===step.id);
     if(debate?.text) {
@@ -691,19 +746,37 @@ function renderQuestOffer() {
 
 function completeOffer(step,npc,option) {
   if(step!==objective()||npc!==state.contact||npc.actor.id!==questGiver())return;
-  if(!questBook.advance(state.mission,step.kind,option.id))return;
+  const campaign=state.campaign;
+  const context=step.conflict?storyContext():null;
+  const advanced=campaign
+    ? campaignBook.advance(campaign,step.kind,option.id)
+    : questBook.advance(state.mission,step.kind,option.id);
+  if(!advanced)return;
   const log=state.logs.get(dialogueKey(npc));
   log.push({who:actorById.get(state.active).name,text:option.label,player:true});
   log.push({who:npc.actor.name,text:option.effect||"Rendben. Rögzítettem a küldetésnaplóban."});
+  if(step.conflict) {
+    const decision=campaign.history.at(-1);
+    radioItem("story-outcome",step.title+" · következmény",{
+      actorId:npc.actor.id,conflictId:step.conflict.id,option:option.id,...context,
+    },"A legénység rögzítette a döntést: "+option.label+". Az ügy bekerül a következő wyomingi jelentésbe.")
+      .then(item=>{if(item.model)decision.outcome=item.text.slice(0,220);});
+  }
+  if(!campaign&&objective().kind==="done")state.campaign=campaignBook.start();
   if(objective().debate)publishConflict(objective());
   renderMap();renderQuestOffer();paintLog();
-  if(objective().kind==="done")tell("Jelentés elküldve. A felderítő menet teljesítve.");
+  if(step.id==="report")tell("Jelentés elküldve. Új feladat érkezett a fedélzeten.");
+  if(objective().id==="return-flight")tell("A kör lezárult. A Wyoming várja a legénységet.");
 }
 
 function commandUse() {
   if(state.mapId!=="ship"||!equal(position(),questBook.seat))return;
-  const flight=questBook.beginFlight(state.mission);
+  if(state.mission.inFlight)return;
+  const campaign=state.campaign;
+  const step=objective();
+  const flight=campaign?step.flight:questBook.beginFlight(state.mission);
   if(!flight){tell("A parancsnoki állás a következő repülési szakasznál lesz használható.");return;}
+  if(campaign)state.mission.inFlight=true;
   stopRoute();closeChat();
   renderMap();
   $("flight-route").textContent=flight.from+" → "+flight.to;
@@ -720,7 +793,11 @@ function commandUse() {
     const phase=ratio<.2?"Pálya beállítása…":ratio<.76?"Utazás a kijelölt pályán…":"Lassítás és helyzetellenőrzés…";
     if($("flight-phase").textContent!==phase)$("flight-phase").textContent=phase;
     if(ratio<1){requestAnimationFrame(tick);return;}
-    questBook.advance(state.mission,"flight");
+    if(campaign) {
+      campaignBook.advance(campaign,"flight");
+      state.mission.inFlight=false;
+      state.mission.launched=step.id==="relaunch";
+    } else questBook.advance(state.mission,"flight");
     $("flight-overlay").hidden=true;
     $("reselect").disabled=false;
     renderMap();
@@ -757,6 +834,7 @@ async function radioItem(kind,title,context,offline) {
   item.pending=false;
   paintRadio();
   if(kind==="conflict"&&objective().kind==="choice")renderQuestOffer();
+  return item;
 }
 
 function sendGround() {
@@ -771,7 +849,11 @@ function sendGround() {
   if(!recipient)return;
   return radioItem("ground","Földi irányítás → "+recipient.actor.name,{
     actorId:recipient.actor.id,directive:number%questBook.directives.length,stage:objective().id,choice:state.mission.choice,reportChoice:state.mission.reportChoice,
-  },directive.fallback);
+    conflictId:objective().conflict?.id,
+    decisions:state.campaign?.history.slice(-3),
+  },objective().conflict
+    ? "Földi irányítás. Az aktuális ügy kockázatáról kérünk rövid helyzetjelentést."
+    : directive.fallback);
 }
 
 function publishConflict(step) {

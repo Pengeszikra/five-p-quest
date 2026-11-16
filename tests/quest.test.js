@@ -3,6 +3,7 @@ const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const vm=require("node:vm");
 const quest=require("../quest.js");
+const campaign=require("../campaign.js");
 const actorsCode=fs.readFileSync(require.resolve("../actors.js"),"utf8");
 
 test("the campaign cannot skip steps and reaches the report after both possible decisions",()=>{
@@ -59,5 +60,41 @@ test("all portraits have accessible positions and three playable characters cann
       step.givers.slice(0,3).forEach(id=>onMap.delete(id));
       assert.equal(questBook.giver({index},onMap),step.givers[3]);
     }
-  `,{questBook:quest,assert});
+    const recurringGivers=[
+      ...Object.values(campaignBook.specialists).map(givers=>({map:"ship",givers})),
+      campaignBook.stages.debrief,
+    ];
+    for(const step of recurringGivers){
+      assert.equal(new Set(step.givers).size,4);
+      for(const id of step.givers)assert(maps[step.map].npcs.some(npc=>npc.actor.id===id),id);
+    }
+  `,{questBook:quest,campaignBook:campaign,assert});
+});
+
+test("all 70 conflicts are playable before the deck repeats, with a mandatory Wyoming stop after every three",()=>{
+  const state=campaign.start(()=>0.9999);
+  const seen=new Set();
+  for(let count=0;count<70;count++){
+    assert.equal(state.step.id,"episode");
+    const conflict=state.step.conflict;
+    assert(!seen.has(conflict.id));
+    assert.equal(state.step.choices.length,2);
+    assert.equal(campaign.advance(state,"choice","0"),false);
+    assert.equal(campaign.advance(state,"gate"),false);
+    seen.add(conflict.id);
+    assert(campaign.advance(state,"choice",count%2));
+    if((count+1)%3===0){
+      for(const [id,action] of [["return-flight","flight"],["return-dock","gate"],["debrief","talk"],["reboard","gate"],["relaunch","flight"]]){
+        assert.equal(state.step.id,id);
+        assert(campaign.advance(state,action));
+      }
+    }
+  }
+  assert.equal(state.total,70);
+  assert.equal(state.history.length,6);
+  assert.equal(state.voyage,24);
+  assert.notEqual(state.step.conflict.id,state.history.at(-1).conflictId);
+  assert.equal(seen.size,campaign.byId.size);
+  const english=fs.readFileSync(require.resolve("../conflicts.md"),"utf8");
+  for(const conflict of campaign.byId.values())assert(english.includes(conflict.premise),conflict.id);
 });

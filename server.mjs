@@ -11,6 +11,8 @@ const assets = new Map(Object.entries({
   "/style.css":["style.css","text/css; charset=utf-8"],
   "/game.js":["game.js","text/javascript; charset=utf-8"],
   "/quest.js":["quest.js","text/javascript; charset=utf-8"],
+  "/conflicts.js":["conflicts.js","text/javascript; charset=utf-8"],
+  "/campaign.js":["campaign.js","text/javascript; charset=utf-8"],
   "/actors.js":["actors.js","text/javascript; charset=utf-8"],
   ...Object.fromEntries(["crew","wyoming","up","machines"].map(id=>[
     "/portraits/"+id+".webp",["portraits/"+id+".webp","image/webp"],
