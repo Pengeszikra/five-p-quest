@@ -8,5 +8,5 @@
     "bump": "node scripts/bump.mjs",
     "bump:dry": "node scripts/bump.mjs --dry"
   },
-  "version": "26.11.16003"
+  "version": "26.11.16004"
 }
