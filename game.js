@@ -422,6 +422,12 @@ function begin() {
     state.active=captainId;
     politics.setCaptain(captainId);
     politics.seed();
+    // A controlled party member cannot simultaneously appear as a separate conversation NPC.
+    for(const event of politics.state.events){
+      if(!state.chosen.includes(event.actorId))continue;
+      const alternative=politics.state.crew.find(id=>!state.chosen.includes(id)&&!politics.state.events.some(other=>other!==event&&other.actorId===id));
+      if(alternative)event.actorId=alternative;
+    }
   }
   state.started=true;
   for(const [id,map] of Object.entries(maps)) {
