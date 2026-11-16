@@ -20,18 +20,25 @@
 <div class="page">
   <header class="masthead">
     <div class="wordmark"><span class="mark" aria-hidden="true">5<span>%</span></span><div><p>FIVE PERCENT</p><h1>Quest próba</h1></div></div>
+    <nav class="place-strip" aria-label="Helyszínek és átjáró">
+      <button type="button" class="place-card" data-map="wyoming" aria-pressed="true" title="Wyoming állomás">
+        <svg class="place-thumb" viewBox="0 0 72 54" aria-hidden="true"><rect width="72" height="54" rx="8" fill="#213940"/><circle cx="56" cy="12" r="4" fill="#f1ba6d"/><path d="M10 30h52v12H10z" fill="#9eb4b4" stroke="#d3d8c7" stroke-width="1.5"/><path d="M23 30V18h26v12M17 22h38" fill="none" stroke="#8ed4ca" stroke-width="3"/><path d="M34 14v-8M30 8h8" stroke="#f1ba6d" stroke-width="2"/><rect x="29" y="32" width="14" height="8" rx="2" fill="#253b43"/></svg>
+        <span class="place-copy"><strong>Wyoming</strong><small>WU–3463 · állomás</small></span>
+      </button>
+      <div class="place-connection" id="place-connection" data-state="closed" role="status">
+        <span class="connection-track" aria-hidden="true"><span class="connection-dot"></span></span>
+        <span id="connection-label">Átjáró zárva</span>
+      </div>
+      <button type="button" class="place-card" data-map="ship" aria-pressed="false" title="7-es Kvadráns">
+        <svg class="place-thumb" viewBox="0 0 72 54" aria-hidden="true"><rect width="72" height="54" rx="8" fill="#203342"/><circle cx="60" cy="11" r="2" fill="#f1ba6d"/><circle cx="12" cy="13" r="1.5" fill="#8ed4ca"/><path d="M8 31l27-13 29 13-13 9H21z" fill="#b1c8c9" stroke="#8ed4ca" stroke-width="2"/><path d="M27 28h18l-7 8H30z" fill="#355969"/><path d="M11 31l-5 9 19-3M62 31l5 9-19-3" fill="none" stroke="#f1ba6d" stroke-width="2"/></svg>
+        <span class="place-copy"><strong>7-es Kvadráns</strong><small>felderítőhajó</small></span>
+      </button>
+    </nav>
     <div class="groq-badge" id="groq-badge" data-mode="checking" role="status"><span class="signal"></span><strong>Groq</strong><span id="groq-state">Ellenőrzés…</span></div>
   </header>
 
   <main class="workspace">
-    <section class="map-panel" aria-labelledby="map-name">
-      <div class="map-top">
-        <div class="map-title"><p id="map-code">WU–3463</p><h2 id="map-name">Wyoming</h2></div>
-        <nav class="places" aria-label="Helyszín">
-          <button type="button" data-map="wyoming" aria-pressed="true">Wyoming</button>
-          <button type="button" data-map="ship" aria-pressed="false">7-es Kvadráns</button>
-        </nav>
-      </div>
+    <section class="map-panel" aria-label="Játéktér">
       <div class="map-scroll" id="map-scroll">
         <div class="map" id="map" aria-label="Kockáspapíros alaprajz">
           <canvas id="plan" width="1000" height="600" aria-hidden="true"></canvas>
@@ -100,7 +107,7 @@
     </aside>
   </main>
 
-  <footer class="footer"><span><i class="legend-player"></i> Te <i class="legend-person"></i> Beszélgetőpartner <i class="legend-door"></i> Átjáró <i class="legend-quest">?</i> Küldetés <i class="legend-social">!</i> Fedélzeti ügy</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> vagy nyilak <b>·</b> <kbd>Esc</kbd> bezárás</span> <span id="app-version" title="Five Percent Quest verzió">v26.11.16003</span></footer>
+  <footer class="footer"><span><i class="legend-player"></i> Te <i class="legend-person"></i> Beszélgetőpartner <i class="legend-door"></i> Átjáró <i class="legend-quest">?</i> Küldetés <i class="legend-social">!</i> Fedélzeti ügy</span><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> vagy nyilak <b>·</b> <kbd>Esc</kbd> bezárás</span> <span id="app-version" title="Five Percent Quest verzió">v26.11.16004</span></footer>
 </div>
 </body>
 </html>
