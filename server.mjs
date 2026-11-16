@@ -8,8 +8,10 @@ const root = new URL("./",import.meta.url);
 const read = (path,encoding) => readFileSync(new URL(path,root),encoding);
 const assets = new Map(Object.entries({
   "/index.html":["index.html","text/html; charset=utf-8"],
+  "/favicon.svg":["favicon.svg","image/svg+xml"],
   "/style.css":["style.css","text/css; charset=utf-8"],
   "/game.js":["game.js","text/javascript; charset=utf-8"],
+  "/social.js":["social.js","text/javascript; charset=utf-8"],
   "/quest.js":["quest.js","text/javascript; charset=utf-8"],
   "/conflicts.js":["conflicts.js","text/javascript; charset=utf-8"],
   "/campaign.js":["campaign.js","text/javascript; charset=utf-8"],

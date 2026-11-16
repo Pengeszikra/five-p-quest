@@ -196,6 +196,7 @@ function drawFittings(context,area,p) {
 }
 
 const state={mapId:"wyoming", filter:0, chosen:[], active:null, started:false, positions:{}, contact:null, pathId:0, logs:new Map(), hint:"",mission:questBook.start(),radio:[],unread:0,groundIndex:0,groundTimer:null,campaign:null,crewMemory:[],episodeBriefs:new WeakMap()};
+const politics=crewPolitics.create(actors);
 const ai={status:"checking",pending:new Set(),results:new Map()};
 const currentMap=()=>maps[state.mapId];
 const position=()=>state.positions[state.mapId];
@@ -323,6 +324,13 @@ function renderMap() {
       mark.className="quest-mark";mark.setAttribute("aria-hidden","true");mark.textContent="?";
       b.append(mark);
     }
+    const socialEvent=politics.state.events.find(e=>e.actorId===npc.actor.id);
+    if(socialEvent && state.started && $("pick").hidden){
+      b.classList.add("social-giver");
+      const mark=document.createElement("span");mark.className="quest-mark social-mark";
+      mark.textContent="!";mark.setAttribute("aria-hidden","true");b.append(mark);
+      b.title+=" · "+socialEvent.title;
+    }
     if(state.contact?.actor.id===npc.actor.id)b.classList.add("is-contact");
     b.tabIndex=state.started && $("pick").hidden ? 0 : -1;
     posStyle(b,npc.cell);
@@ -341,6 +349,7 @@ function renderMap() {
   document.querySelectorAll("[data-move]").forEach(b=>{b.disabled=!playing;});
   updateHint();
   renderMission();
+  renderPolitics();
 }
 function updateHint() {
   $("map-help").textContent=state.hint||
@@ -350,6 +359,48 @@ function tell(text) {
   state.hint=text;
   updateHint();
   $("game-status").textContent=text;
+}
+function renderPolitics(){
+  const panel=$("politics-panel");panel.hidden=!state.started;
+  if(!state.started)return;
+  panel.replaceChildren();
+  const title=document.createElement("h3");title.textContent="FEDÉLZETI POLITIKA";
+  const captain=actorById.get(politics.state.captain);
+  const info=document.createElement("p");info.textContent="Kapitány: "+captain.name+" · Tekintély: "+politics.state.authority+"/100";
+  const bar=document.createElement("progress");bar.max=100;bar.value=politics.pressure();
+  bar.setAttribute("aria-label","Bizalmatlansági nyomás");
+  const note=document.createElement("p");note.className="politics-note";
+  note.textContent="Bizalmatlanság: "+politics.pressure()+"% · Szövetségesek: "+politics.supporters()+
+    " · Ellenfelek: "+politics.opponents()+" · Nyitott ügyek: "+politics.state.events.length;
+  const msg=document.createElement("p");msg.textContent=politics.state.lastMessage;
+  panel.append(title,info,bar,note,msg);
+  for(const event of politics.state.events.slice(0,4)){
+    const actor=actorById.get(event.actorId);
+    const place=Object.entries(maps).find(([,map])=>map.npcs.some(npc=>npc.actor.id===event.actorId));
+    const hint=document.createElement("p");hint.className="politics-event";
+    hint.textContent="! "+actor.name+" · "+(place?.[1].title||"fedélzet")+" · "+event.title;
+    panel.append(hint);
+  }
+}
+function renderSocialOffer(){
+  const panel=$("social-offer");panel.replaceChildren();
+  const npc=state.contact, event=npc&&politics.state.events.find(e=>e.actorId===npc.actor.id);
+  panel.hidden=!event;
+  if(!event)return;
+  const title=document.createElement("strong");title.textContent="! "+event.title;
+  const description=document.createElement("p");description.textContent=event.text;
+  const relation=document.createElement("p");
+  relation.textContent="Viszony a kapitányhoz: "+politics.label(politics.relation(npc.actor.id,politics.state.captain));
+  panel.append(title,description,relation);
+  for(const option of event.options){
+    panel.append(makeButton(option.label,()=>{
+      const result=politics.resolve(event.id,option.id);
+      if(!result)return;
+      state.logs.get(dialogueKey(npc))?.push({who:actorById.get(state.active).name,text:option.label,player:true},{who:npc.actor.name,text:politics.state.lastMessage});
+      renderSocialOffer();paintLog();renderMap();
+      tell(politics.state.lastMessage);
+    }));
+  }
 }
 function renderParty() {
   $("active-name").textContent=actorById.get(state.active).name;
@@ -368,6 +419,23 @@ function begin() {
   if(!state.started)state.mapId="wyoming";
   state.active=state.chosen.includes(state.active)?state.active:state.chosen[0];
   if(!state.started) state.positions=Object.fromEntries(Object.entries(maps).map(([id,map])=>[id,[...map.spawn]]));
+  if(!state.started){
+    const captainId=$("captain-select").value||state.chosen[0];
+    // The captain is a playable protagonist, not merely a remote NPC.
+    if(!state.chosen.includes(captainId)){
+      if(state.chosen.length>=3)state.chosen.pop();
+      state.chosen.unshift(captainId);
+    }
+    state.active=captainId;
+    politics.setCaptain(captainId);
+    politics.seed();
+    // A controlled party member cannot simultaneously appear as a separate conversation NPC.
+    for(const event of politics.state.events){
+      if(!state.chosen.includes(event.actorId))continue;
+      const alternative=politics.state.crew.find(id=>!state.chosen.includes(id)&&!politics.state.events.some(other=>other!==event&&other.actorId===id));
+      if(alternative)event.actorId=alternative;
+    }
+  }
   state.started=true;
   for(const [id,map] of Object.entries(maps)) {
     const occupied=map.npcs.filter(npc=>!state.chosen.includes(npc.actor.id)).map(npc=>npc.cell);
@@ -482,12 +550,6 @@ const sayings={
   "crew.chief-engineer":"Ha szerelni jöttél, a nyolcas ott van. Ha beszélgetni, van egy percem.",
   "up.snp-physicist":"Épp két mérés közé estél. Van kedved belenézni, vagy inkább kérdeznél?",
 };
-const topics=[
-  {id:"work",label:"Mi a munkád?"},
-  {id:"mood",label:"Mi foglalkoztat?"},
-  {id:"drive",label:"Mit tudsz az SNP-ről?"},
-  {id:"place",label:"Mi van itt?"},
-];
 const topicWords={
   work:/munk|foglalkoz|beosztas|mi a dolgod|mit csinalsz|szereped/,
   drive:/snp|hajtas|inverzit|eredet|ki talalta|up tech|technolog/,
@@ -512,7 +574,7 @@ function openChat(npc) {
     state.logs.set(key,[{who:npc.actor.name,text:greeting}]);
   }
   paintLog();
-  renderQuestOffer();
+  renderQuestOffer();renderSocialOffer();
   if(objective().conflict&&npc.actor.id===questGiver())requestEpisodeBrief(objective(),npc);
   tell("Beszélgetés · "+npc.actor.name);
   $("close-chat").focus({preventScroll:true});
@@ -532,7 +594,7 @@ function closeChat(returnFocus=false) {
   state.contact=null;
   $("conversation").hidden=true;$("waiting").hidden=false;
   $("chat-input").value="";
-  renderQuestOffer();
+  renderQuestOffer();renderSocialOffer();
   tell("");
   if(returnFocus){
     $("map").focus({preventScroll:true});
@@ -604,7 +666,7 @@ function paintAiStatus() {
   $("ai-status").textContent=busy?"A válasz készül…":
     result?.model?"Groq · "+result.model:
     result?.offline||ai.status==="off"||ai.status==="error"?"Helyi válasz":"Groq-párbeszéd";
-  for(const button of document.querySelectorAll("#topics button, #chat-form button"))button.disabled=busy;
+  for(const button of document.querySelectorAll("#chat-form button"))button.disabled=busy;
 }
 
 async function configureAi() {
@@ -646,6 +708,7 @@ async function ask(message,topic) {
   const normalized=message.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   const selected=topic||Object.keys(topicWords).find(t=>topicWords[t].test(normalized));
   const fallback=answer(npc,selected);
+  politics.activity("conversation",npc.actor.id);
   const lastOrder=[...state.radio].reverse().find(entry=>entry.kind==="ground"&&entry.actorId===npc.actor.id);
   log.push({who:actorById.get(playerId).name,text:message,player:true});
   ai.pending.add(key);
@@ -654,6 +717,7 @@ async function ask(message,topic) {
     actorId:npc.actor.id,playerId,location,room:npc.area,history,message,
     stage:objective().id,choice:state.mission.choice,reportChoice:state.mission.reportChoice,order:lastOrder?.text,
     ...storyContext(),conflictId:objective().conflict?.id,
+    social:politics.context(npc.actor.id),
   });
   const response=reply?.reply??fallback;
   log.push({who:npc.actor.name,text:response,model:reply?.model});
@@ -663,6 +727,7 @@ async function ask(message,topic) {
   ai.pending.delete(key);
   ai.results.set(key,reply||{offline:true});
   if(state.contact&&dialogueKey(state.contact)===key)paintLog();
+  renderMap();
 }
 
 function storyContext() {
@@ -752,6 +817,7 @@ function completeOffer(step,npc,option) {
     ? campaignBook.advance(campaign,step.kind,option.id)
     : questBook.advance(state.mission,step.kind,option.id);
   if(!advanced)return;
+  if(step.kind==="choice")politics.activity("decision",npc.actor.id);
   const log=state.logs.get(dialogueKey(npc));
   log.push({who:actorById.get(state.active).name,text:option.label,player:true});
   log.push({who:npc.actor.name,text:option.effect||"Rendben. Rögzítettem a küldetésnaplóban."});
@@ -764,7 +830,7 @@ function completeOffer(step,npc,option) {
   }
   if(!campaign&&objective().kind==="done")state.campaign=campaignBook.start();
   if(objective().debate)publishConflict(objective());
-  renderMap();renderQuestOffer();paintLog();
+  renderMap();renderQuestOffer();renderSocialOffer();paintLog();
   if(step.id==="report")tell("Jelentés elküldve. Új feladat érkezett a fedélzeten.");
   if(objective().id==="return-flight")tell("A kör lezárult. A Wyoming várja a legénységet.");
 }
@@ -860,6 +926,11 @@ function publishConflict(step) {
   return radioItem("conflict",step.debate.title,{stage:step.id,choice:state.mission.choice},step.debate.fallback);
 }
 
+for(const actor of actors){
+  const option=document.createElement("option");option.value=actor.id;option.textContent=actor.name+" · "+actor.role;
+  $("captain-select").append(option);
+}
+$("captain-select").value="crew.captain";
 $("start").addEventListener("click",()=>{begin();$("map").focus({preventScroll:true});});
 $("reselect").addEventListener("click",()=>{
   if(state.mission.inFlight)return;
@@ -875,7 +946,6 @@ $("chat-form").addEventListener("submit",(event)=>{
   ask(input.value.trim());
   input.value="";
 });
-for(const topic of topics)$("topics").append(makeButton(topic.label,()=>ask(topic.label,topic.id)));
 document.querySelectorAll("[data-map]").forEach(b=>b.addEventListener("click",()=>switchMap(b.dataset.map)));
 document.querySelectorAll("[data-move]").forEach(b=>b.addEventListener("click",()=>takeStep(b.dataset.move)));
 $("map").tabIndex=0;
