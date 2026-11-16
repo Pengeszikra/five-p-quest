@@ -414,6 +414,11 @@ function begin() {
   if(!state.started) state.positions=Object.fromEntries(Object.entries(maps).map(([id,map])=>[id,[...map.spawn]]));
   if(!state.started){
     const captainId=$("captain-select").value||state.chosen[0];
+    // The captain is a playable protagonist, not merely a remote NPC.
+    if(!state.chosen.includes(captainId)){
+      if(state.chosen.length>=3)state.chosen.pop();
+      state.chosen.unshift(captainId);
+    }
     politics.setCaptain(captainId);
     politics.seed();
   }
