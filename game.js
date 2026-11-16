@@ -419,6 +419,7 @@ function begin() {
       if(state.chosen.length>=3)state.chosen.pop();
       state.chosen.unshift(captainId);
     }
+    state.active=captainId;
     politics.setCaptain(captainId);
     politics.seed();
   }
