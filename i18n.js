@@ -79,6 +79,31 @@ if(en){
  });
  questBook.steps.forEach(step=>localizeStep(step,steps[step.id]));
  if(campaignBook.stages)Object.values(campaignBook.stages).forEach(step=>localizeStep(step,extra[step.id]));
+ 
+ const optionEffects={
+ conflict:["Engineering gets more cooling reserve. UP will have a shorter measurement window.","The instruments gain sensitivity. Engineering checks cooling more frequently."],
+ "report-conflict":["The report is marked preliminary, with the discrepancy highlighted.","UP compares the raw logs and includes its findings in the report."]
+ };
+ questBook.steps.forEach(step=>{
+  if(optionEffects[step.id])step.choices.forEach((choice,i)=>translatedField(choice,"effect",optionEffects[step.id][i]));
+ });
+ const debateEnglish={
+ conflict:{title:"Engineering ↔ UP Lab",positions:"Engineering requests cooling reserve; the SNP physicist argues for instrument sensitivity.",fallback:"Engineering: We need more cooling reserve. I cannot promise another jump under this load.\nUP Lab: If we reduce the instruments now, the first approach report will be based on guesses again.",speakers:["Engineering","UP Lab"]},
+ "report-conflict":{title:"Bridge ↔ UP Analysis",positions:"Communications wants to send an explicitly preliminary report now. UP Analysis wants to compare the raw logs first.",fallback:"Bridge: The Earth channel is open. Send a preliminary report and flag uncertain points.\nUP Analysis: The raw logs disagree. Let me compare them before we report.",speakers:["Bridge","UP Analysis"]}
+ };
+ questBook.steps.forEach(step=>{
+   if(!step.debate||!debateEnglish[step.id])return;
+   const d=debateEnglish[step.id];
+   ["title","positions","fallback","speakers"].forEach(k=>translatedField(step.debate,k,d[k]));
+ });
+ const directivesEnglish=[
+ ["compare two independent SNP readings during the test circuit","Ground control: Obtain SNP readings from two independent instruments. Report discrepancies too."],
+ ["distinguish measured planetary data from a visualized surface estimate","In the planetary report, list the measured distance separately from the estimated surface visualization."],
+ ["preserve raw readings and timestamps, flagging suspicious points","Keep raw values with their timestamps. Flag the apparently erroneous point in the report."],
+ ["confirm cooling reserve and sensor window length","Report the cooling reserve and sensor window length so we can schedule the next scan."]
+ ];
+ questBook.directives.forEach((directive,i)=>{translatedField(directive,"task",directivesEnglish[i][0]);translatedField(directive,"fallback",directivesEnglish[i][1]);});
+
  const finished=questBook.current({index:999});
  localizeStep(finished,steps.complete);
  conflictBook.forEach(conflict=>{
