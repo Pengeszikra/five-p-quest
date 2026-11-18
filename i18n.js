@@ -4,7 +4,7 @@ const lang = localStorage.getItem("five-percent-language") === "en" ? "en" : "hu
 window.gameLanguage=lang;
 const en=lang==="en";
 const dictionary={
-"Quest próba":"Quest Prototype","Világkalauz ↗":"World Guide ↗","WU–3463 · állomás":"WU–3463 · station","Átjáró zárva":"Passage closed","felderítőhajó":"exploration ship","Ellenőrzés…":"Checking…",
+"Quest próba":"Quest Prototype","Világkalauz":"World Guide","WU–3463 · állomás":"WU–3463 · station","Átjáró zárva":"Passage closed","felderítőhajó":"exploration ship","Ellenőrzés…":"Checking…",
 "7-ES KVADRÁNS · REPÜLÉSI NAPLÓ":"SECTOR 7 · FLIGHT LOG","Jelölj ki legfeljebb három szereplőt az induláshoz.":"Choose up to three characters to begin.",
 "SZEREPLŐVÁLASZTÁS":"CHARACTER SELECTION","Kivel indulsz?":"Who will you travel with?",
 "Válassz 1–3 szereplőt. A kapitányt külön is kinevezheted a 64 szereplő közül; a kinevezésnek következményei lesznek.":"Select 1–3 characters. You can appoint any of the 64 characters as captain; the appointment has consequences.",
@@ -132,14 +132,19 @@ function translateTree(node){
    for(const attr of ["title","aria-label","placeholder"]){const value=el.getAttribute(attr);if(value){const v=convert(value);if(v!==value)el.setAttribute(attr,v);}}
  }
 }
-const choose=document.createElement("select");
-choose.id="language-switch";choose.setAttribute("aria-label","Language / Nyelv");choose.title="Language / Nyelv";
-choose.innerHTML='<option value="hu">HU</option><option value="en">EN</option>';
-choose.value=lang;
-choose.addEventListener("change",()=>{localStorage.setItem("five-percent-language",choose.value);location.reload();});
-const header=document.querySelector(".masthead");
-header.append(choose);
-choose.style.cssText="margin-left:8px;background:#172b31;color:#e6f5ed;border:1px solid #6a9695;border-radius:8px;padding:7px 9px;cursor:pointer";
+// Floating language tab: outside the masthead layout, so it cannot resize the header.
+const choose=document.createElement("button");
+choose.type="button";
+choose.id="language-switch";
+choose.className="language-flag";
+choose.textContent=lang==="hu"?"🇬🇧":"🇭🇺";
+choose.setAttribute("aria-label",lang==="hu"?"Switch to English":"Váltás magyarra");
+choose.title=lang==="hu"?"English":"Magyar";
+choose.addEventListener("click",()=>{
+ localStorage.setItem("five-percent-language",lang==="hu"?"en":"hu");
+ location.reload();
+});
+document.body.append(choose);
 if(en){
  translateTree(document.body);
  const observer=new MutationObserver(changes=>{
