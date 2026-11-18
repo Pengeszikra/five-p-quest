@@ -2,6 +2,15 @@
 
 Magyar nyelvű, kétdimenziós Five Percent prototípus. A Wyoming állomás és a 7-es Kvadráns kockáspapíros alaprajzain a négy karakterlap 64 szereplőjével találkozhatsz elosztva. Az indulásnál 1–3 figura választható.
 
+## Magyar / English
+
+A fejlécben található **HU / EN** választóval lehet nyelvet váltani. A választást a böngésző `localStorage` tárolja, így a következő megnyitáskor is megmarad.
+
+- A 64 szereplő angol munkaköri bemutatása a [characters.en.md](characters.en.md) fájlban olvasható. A teljes eredeti magyar karakterleírás az `actors.js` fájlban marad.
+- A küldetéslánc, a 70 konfliktus eredeti angol alaphelyzete, a döntési címkék és az offline alapválaszok angol módot kapnak.
+- Groq használatakor a nyelv beállítása a szerverhez is eljut; az angol módban a modellnek angol választ kell adnia.
+- A játékmenet nem változik. A nyelvváltás újratölti az oldalt, így a megnyitott játékmenet újraindul.
+
 ## Indítás
 
 Kulcs nélküli játékhoz önmagában is megnyitható az `index.html`. Node.js és egy Groq-kulcs kell az élő párbeszédhez:
