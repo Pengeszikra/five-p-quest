@@ -4,7 +4,7 @@ const lang = localStorage.getItem("five-percent-language") === "en" ? "en" : "hu
 window.gameLanguage=lang;
 const en=lang==="en";
 const dictionary={
-"Quest próba":"Quest Prototype","WU–3463 · állomás":"WU–3463 · station","Átjáró zárva":"Passage closed","felderítőhajó":"exploration ship","Ellenőrzés…":"Checking…",
+"Quest próba":"Quest Prototype","Világkalauz ↗":"World Guide ↗","WU–3463 · állomás":"WU–3463 · station","Átjáró zárva":"Passage closed","felderítőhajó":"exploration ship","Ellenőrzés…":"Checking…",
 "7-ES KVADRÁNS · REPÜLÉSI NAPLÓ":"SECTOR 7 · FLIGHT LOG","Jelölj ki legfeljebb három szereplőt az induláshoz.":"Choose up to three characters to begin.",
 "SZEREPLŐVÁLASZTÁS":"CHARACTER SELECTION","Kivel indulsz?":"Who will you travel with?",
 "Válassz 1–3 szereplőt. A kapitányt külön is kinevezheted a 64 szereplő közül; a kinevezésnek következményei lesznek.":"Select 1–3 characters. You can appoint any of the 64 characters as captain; the appointment has consequences.",
