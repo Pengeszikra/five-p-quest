@@ -63,3 +63,9 @@ A Five Percent Quest a 3Draft dátumalapú formátumát követi: `YY.M.DNNN` (p�
 ## Rögzített játéktér és helyszínkártyák (26.11.16004)
 
 A Wyoming és a 7-es Kvadráns térképe nem görgethető: a teljes 20×12-es alaprajz mindig a rendelkezésre álló játéktérbe illeszkedik. A jobb oldali szereplő- és párbeszédpanel külön görgethető. A felső sáv két képes helyszínkártyája közti vonal jelzi a dokkolt (de zárt), a szabad átjárású és a levált állapotot; a jelző a meglévő küldetés és áthaladási állapotból számolódik.
+
+## Világkalauz / World Guide
+
+A játék fejlécében a **Világkalauz / World Guide** link a `guide.html` oldalra vezet. A képes világkalauz a Wyoming WU–3463 állomást, a 7-es Kvadráns legénységét, az UP Explorer terveit, a négy 16 szereplős casting lapot és a 64 szereplő kereshető, másolható promptját mutatja. A `HU / EN` nyelvválasztás megmarad. A világépítő promptok az oldalon egy kattintással másolhatók.
+
+A hét illusztráció WebP fájlként a `guide-assets/` mappába kerül. Az illusztrációk külön feltöltendők; az oldal akkor tudja megjeleníteni őket, amikor ezek az állományok valóban a repóban vannak. A build akkor is lefut, ha még hiányoznak; a kész build az elérhető állományokat másolja. A képek fájlnevei: `crew.webp`, `wyoming-crew.webp`, `up-laboratory.webp`, `robots.webp`, `wyoming-station.webp`, `up-explorer.webp`, `quantum-shield.webp`.
