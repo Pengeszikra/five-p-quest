@@ -229,3 +229,11 @@ html,body{height:100%;overflow:hidden}
   .workspace{height:auto!important;min-height:0!important;grid-template-rows:minmax(0,52%) minmax(0,48%)}
   .workspace:has(#pick:not([hidden])){grid-template-rows:minmax(0,61%) minmax(0,39%)}
 }
+
+/* Fixed language tab never participates in the responsive header grid. */
+.language-flag{position:fixed;z-index:100;right:0;top:clamp(78px,14vh,135px);display:grid;place-items:center;width:42px;height:43px;padding:0;border:1px solid #6a9695;border-right:0;border-radius:12px 0 0 12px;background:#172b31;box-shadow:-3px 3px 14px #0008;font-size:24px;line-height:1;cursor:pointer;touch-action:manipulation}
+.language-flag:hover,.language-flag:focus-visible{background:#29434a;outline-offset:2px}
+.footer-end{display:inline-flex;align-items:center;gap:12px}
+.guide-icon{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid transparent;border-radius:6px;color:var(--amber);text-decoration:none;font-size:18px;line-height:1}
+.guide-icon:hover,.guide-icon:focus-visible{background:#29434a;border-color:#6a9695}
+@media(max-width:770px){.language-flag{top:clamp(72px,13vh,110px);width:35px;height:38px;font-size:21px}.footer-end{gap:5px}.guide-icon{width:24px;height:24px}}
