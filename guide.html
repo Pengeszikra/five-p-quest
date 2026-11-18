@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#13191e">
+<title>Five Percent · World Guide</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<script defer src="actors.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#111920;--surface:#1d2931;--edge:#3b505e;--ink:#f3ead8;--muted:#a4b8bd;--orange:#ef9d58;--cyan:#90d7d0}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 15% 0%,#293b45,transparent 35%),var(--bg);color:var(--ink);font:15px/1.6 system-ui,Arial,sans-serif}
+a{color:var(--cyan)}button,select{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:5;background:#111b22f2;border-bottom:1px solid var(--edge);backdrop-filter:blur(12px)}
+nav{max-width:1300px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-size:18px;font-weight:800;letter-spacing:.09em;text-decoration:none;color:var(--ink);margin-right:auto}
+.navlink{font-size:13px;text-decoration:none}
+select,.copy{background:#253741;color:var(--ink);border:1px solid #678187;border-radius:7px;padding:7px 12px}
+main{max-width:1300px;margin:auto;padding:30px 20px 100px}
+.intro{max-width:820px}h1,h2,h3{line-height:1.16}h1{font-size:clamp(32px,5vw,64px);letter-spacing:.045em;margin:10px 0}
+h2{font-size:clamp(25px,3vw,38px);margin:0 0 15px}h3{margin:12px 0;font-size:20px}
+.eyebrow{color:var(--orange);font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:700}
+.muted{color:var(--muted)}.section{margin-top:54px;scroll-margin-top:95px}
+.heroGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.mediaCard,.infoCard,.profile{border:1px solid var(--edge);background:var(--surface);border-radius:12px;overflow:hidden}
+.mediaCard img{display:block;width:100%;height:auto;background:#0d151c}
+.mediaCard figcaption{padding:12px 16px;color:var(--muted);font-size:13px}
+.mediaCard{margin:0}.mediaCard.wide{grid-column:span 2}
+.infoCard{padding:22px}.prompt{margin:13px 0;background:#111b22;border-left:3px solid var(--orange);padding:16px;border-radius:4px;color:#dce9e7;white-space:pre-wrap;font-size:13px;line-height:1.65}
+.copy{font-size:12px;text-transform:uppercase;letter-spacing:.08em}.copy:hover{border-color:var(--orange)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.castGallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.profileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.profile{padding:16px}.profile h3{font-size:16px;margin:0 0 6px}.profile small{color:var(--orange);font-family:monospace}.profile p{margin:8px 0;color:var(--muted)}
+.groupTitle{grid-column:1/-1;margin:22px 0 0;border-bottom:1px solid var(--edge);padding-bottom:8px}
+.filter{margin:10px 0 22px;width:100%;max-width:420px;background:#253741;color:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:12px}
+@media(max-width:800px){.heroGrid,.cards,.castGallery,.profileGrid{grid-template-columns:1fr}.mediaCard.wide{grid-column:span 1}nav{gap:10px}.navlink{font-size:12px}main{padding:20px 14px 60px}}
+</style>
+</head>
+<body>
+<header><nav><a class="brand" href="index.html">5% · QUEST</a><a class="navlink" href="#locations" data-hu="Helyszínek" data-en="Locations">Helyszínek</a><a class="navlink" href="#characters" data-hu="Szereplők" data-en="Characters">Szereplők</a><a class="navlink" href="#prompts" data-hu="Világleírások" data-en="World prompts">Világleírások</a><a class="navlink" href="index.html" data-hu="← Vissza a játékhoz" data-en="← Back to game">← Vissza a játékhoz</a><select id="lang" aria-label="Language / Nyelv"><option value="hu">HU</option><option value="en">EN</option></select></nav></header>
+<main>
+<div class="intro"><span class="eyebrow">UP Laboratory / Five Percent</span><h1 data-hu="Világkalauz" data-en="World Guide">Világkalauz</h1><p class="muted" data-hu="Képes univerzum-biblia a Wyoming bázisról, a 7-es Kvadráns legénységéről, az UP Explorerről és a 64 szereplőről. A leírások AI-promptként másolhatók." data-en="An illustrated world bible for Wyoming station, the Sector 7 crew, the UP Explorer, and all 64 characters. Copy any description as an AI prompt.">Képes univerzum-biblia a Wyoming bázisról, a 7-es Kvadráns legénységéről, az UP Explorerről és a 64 szereplőről. A leírások AI-promptként másolhatók.</p></div>
+<section class="section" id="locations"><span class="eyebrow">01 / Locations</span><h2 data-hu="Bázis és űrhajók" data-en="Station & starships">Bázis és űrhajók</h2><div class="heroGrid">
+<figure class="mediaCard wide"><img loading="eager" src="guide-assets/wyoming-station.webp" alt="WU-3463 Wyoming space station design sheet"><figcaption>WU–3463 · Wyoming UP 3463 / Orbital dock, laboratory, canteen and workshop</figcaption></figure>
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/up-explorer.webp" alt="UP Explorer three-inverzit-tank starship concept and cutaway"><figcaption>UP Explorer · integrated deep-space survey starship</figcaption></figure>
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/quantum-shield.webp" alt="UP Explorer deployed hexagonal quantum shield"><figcaption>UP Explorer · forward quantum shield deployment</figcaption></figure>
+</div></section>
+<section class="section" id="characters"><span class="eyebrow">02 / Casting</span><h2 data-hu="A világ 64 szereplője" data-en="The world's 64 characters">A világ 64 szereplője</h2><div class="castGallery">
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/crew.webp" alt="16 Sector 7 crew character casting portraits"><figcaption>7th Quadrant Crew · 16 characters</figcaption></figure>
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/wyoming-crew.webp" alt="16 Wyoming station character casting portraits"><figcaption>Wyoming Station · 16 characters</figcaption></figure>
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/up-laboratory.webp" alt="16 UP Laboratory character casting portraits"><figcaption>UP Laboratory · 16 characters</figcaption></figure>
+<figure class="mediaCard"><img loading="lazy" src="guide-assets/robots.webp" alt="Robots and androids character casting portraits"><figcaption>Robots & Androids · 16 characters</figcaption></figure>
+</div>
+<p class="muted" data-hu="Keress szerepkör vagy azonosító alapján; minden karakter saját másolható promptot kap." data-en="Search by role or ID; each character has a dedicated copyable prompt.">Keress szerepkör vagy azonosító alapján; minden karakter saját másolható promptot kap.</p>
+<input class="filter" id="search" type="search" placeholder="Karakter keresése / Search characters" aria-label="Search characters">
+<div class="profileGrid" id="profiles"></div>
+</section>
+<section class="section" id="prompts"><span class="eyebrow">03 / AI Context</span><h2 data-hu="Világépítő promptok" data-en="World-building prompts">Világépítő promptok</h2><div class="cards" id="worldCards"></div></section>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const enProfiles={
+"crew.captain":"Responsible for the expedition and for bringing every crew member home.",
+"crew.pilot":"Flies Sector 7, from docking maneuvers to long-range operations.",
+"crew.navigator":"Charts routes and interprets navigation data.",
+"crew.chief-engineer":"Maintains cooling, engines and mechanical safety.",
+"crew.snp-technician":"Runs the experimental SNP propulsion system.",
+"crew.flight-medic":"Provides medical support during expeditions.",
+"crew.systems-engineer":"Monitors integrated shipboard systems.",
+"crew.sensor-operator":"Gathers and verifies readings from the ship's sensors.",
+"crew.eva-specialist":"Performs extravehicular maintenance and fieldwork.",
+"crew.field-geologist":"Studies planetary material and geological samples.",
+"crew.cargo-master":"Controls the cargo manifest and loading plans.",
+"crew.lander-pilot":"Pilots planetary landing craft.",
+"crew.comms-officer":"Manages external communications and Earth reports.",
+"crew.life-support-tech":"Protects the ship's air, water and life-support systems.",
+"crew.robotics-tech":"Maintains and deploys the ship's robots.",
+"crew.mission-cook":"Keeps the crew fed during deep-space travel.",
+"wyoming.station-master":"Runs the independent Wyoming station.",
+"wyoming.bar-owner":"Runs the canteen, the station's social hub.",
+"wyoming.dockmaster":"Coordinates docking berths and clearance.",
+"wyoming.tug-pilot":"Handles short-range maneuvering of station craft.",
+"wyoming.salvager":"Finds reusable materials in discarded machinery.",
+"wyoming.hull-welder":"Repairs outer hull sections and metalwork.",
+"wyoming.airlock-tech":"Maintains airlocks and boarding systems.",
+"wyoming.cargo-loader":"Handles heavy freight and deliveries.",
+"wyoming.quartermaster":"Tracks supplies and spare parts.",
+"wyoming.station-paramedic":"Treats emergencies at the station.",
+"wyoming.short-order-cook":"Prepares meals for residents and crews.",
+"wyoming.scrap-dealer":"Trades equipment and salvaged components.",
+"wyoming.freight-broker":"Arranges cargo contracts and transport routes.",
+"wyoming.greenhouse-tech":"Maintains cultivation systems and station plants.",
+"wyoming.shift-supervisor":"Coordinates crews and work rosters.",
+"wyoming.station-hand":"Solves the miscellaneous jobs that keep Wyoming alive.",
+"up.mission-director":"Directs UP exploration missions.",
+"up.crew-liaison":"Connects crew needs with the UP management.",
+"up.flight-instructor":"Trains pilots and expedition crews.",
+"up.safety-officer":"Keeps the risk register honest.",
+"up.snp-physicist":"Studies the measurable yet unexplained SNP drive.",
+"up.inverzit-engineer":"Works on inverzit storage and hardware.",
+"up.field-theorist":"Investigates uncertain field physics.",
+"up.black-hole-researcher":"Studies extreme gravity and black holes.",
+"up.exoplanet-scientist":"Investigates distant planetary environments.",
+"up.gravity-specialist":"Studies gravitation and gravity manipulation.",
+"up.data-analyst":"Checks measurements, errors and anomalies.",
+"up.instrument-maker":"Builds and calibrates scientific tools.",
+"up.test-pilot":"Flies experimental craft and test missions.",
+"up.xenobiologist":"Investigates possible extraterrestrial life.",
+"up.simulation-engineer":"Models experimental systems and missions.",
+"up.lab-technician":"Operates laboratory equipment and prepares samples.",
+"robot.bartender":"Serves the Wyoming canteen.",
+"robot.cargo":"Automates cargo handling.",
+"robot.hull-repair":"Repairs ship structures from outside.",
+"robot.inspection-drone":"Inspects equipment for defects.",
+"robot.tug":"Moves station loads and equipment.",
+"robot.cleaning":"Maintains basic cleanliness.",
+"robot.survey-drone":"Performs remote reconnaissance.",
+"robot.sample":"Collects field and scientific samples.",
+"android.reception":"Helps visitors at reception.",
+"android.medic":"Assists medical operations.",
+"android.deckhand":"Helps run the ship.",
+"android.lab":"Supports laboratory experiments.",
+"android.translator":"Bridges languages and communications.",
+"android.pilot":"Supports piloting tasks.",
+"android.archivist":"Organizes historical and technical records.",
+"android.guide":"Guides visitors through the station."
+};
+const contexts=[
+ {name:"Wyoming WU–3463",hu:"A Wyoming WU–3463 egy folyamatosan toldozott orbitális határvidéki bázis, amely egy UP Laboratory gyári alapmoduljára épült. A Wyoming saját kézzel hozzáépített bárja, kantinja, műhelye, szállásai, dokkja és irányítótornya ipari, használt, hiteles megjelenést adnak neki. Az UP kutatói, dokkmunkások, pilóták, robotok és utazók egy társadalmilag vegyes közegben osztoznak a szűk tereken. A helyszín egyszerre kutatóállomás, ellátóbázis és a küldetések találkozóhelye. Hangulat: redneck határvidék és működő high-tech, semmi steril luxus.",en:"Wyoming WU–3463 is a modular orbital frontier outpost built around a standard UP Laboratory factory core, then improvised and expanded by Wyoming's inhabitants. An industrial canteen, accommodation pods, workshop, docking control and antennas have visible repairs, worn metal, improvised utilities and warm inhabited interiors. Scientists, dock workers, pilots, androids and travellers share cramped but functional spaces. The base is a laboratory, supply point and gathering place for expeditions. Visual direction: gritty frontier practicality meets advanced physics; never sterile luxury."},
+ {name:"7th Quadrant / Sector 7",hu:"A 7-es Kvadráns a Five Percent történetének felderítőhajója, amely a Wyoming WU–3463 bázisról indul. Szereplői között kapitány, pilóta, navigátor, főgépész, SNP-technikus, orvos, műszaki és tudományos személyzet található. A belső terek a híd, lakótér, mintatár, géptér, hangár és zsilip köré szerveződnek. A küldetésekben a döntéseknek társadalmi és technikai következményük van. A legénység a rejtélyes SNP-meghajtást használja, de annak eredetét senki sem ismeri biztosan.",en:"Sector 7 (7th Quadrant) is the Five Percent survey ship departing Wyoming WU–3463. Its crew includes a captain, pilot, navigator, chief engineer, SNP technician, medic and specialists. Its functional interiors include a bridge, living quarters, sample storage, engine room, hangar and airlock. Technical and interpersonal decisions have persistent consequences. The crew can operate the mysterious SNP drive, but nobody has reliable knowledge of its origin."},
+ {name:"UP Explorer",hu:"Az UP Explorer egy nagy hatótávolságú felderítő csillaghajó. Alacsony, széles, ipari formavilágú hajó két használható fedélzettel, kutatóterekkel, lakórészekkel, hangárral és kis leszállóegységekkel. Három integrált inverzittartály táplálja az SNP-meghajtást és a gravitációmanipulációt. Előre nyitható, ovális, áttetsző, hatszög rácsozatú kvantumpajzs védi nagy sebességű utazás közben. A pajzs két oldalsó panelből, teleszkópos karokon áll össze a hajó orra előtt, aktív állapotban kékesen izzik. A képi tervek koncepciók, nem pontos műszaki rajzok.",en:"UP Explorer is a long-range, industrial survey starship with a low wide silhouette and two usable decks: command, labs, accommodation, engineering and small landing craft. Three integrated inverzit tanks support the SNP drive and vehicle-wide gravity manipulation. A forward-deployed shallow oval quantum shield uses a transparent hexagonal lattice. Side panels hinge outward, articulated telescopic arms move the two halves ahead of the nose, and the active lattice glows electric blue during high-speed transit. Visual concept sheets are design references, not manufacturing diagrams."},
+ {name:"The Five Percent setting",hu:"A jósolt technológiai szingularitás elmaradt. Az emberiség a megismerés és a gazdaság korlátaiba ütközött, miközben az SNP-technológia lehetővé tette a csillagközi utazást. Az UP rövidítése Unseen Physics: olyan jelenségek használata és részleges mérése, amelyek eredete továbbra sem ismert. Az univerzumban szereplő rejtélyeket ne oldd fel önkényesen. A történetet emberi döntések, kockázatok és felfedezések viszik előre.",en:"The predicted technological singularity never happened. Knowledge acquisition reached technical, economic and social limits, while SNP technology made interstellar travel viable. UP means Unseen Physics: phenomena humans can use, measure and partly repair without knowing their true origin. Never invent a definitive source or explanation of SNP technology. Keep the drama focused on human choices, risk, teamwork and exploration."}
+];
+let lang=localStorage.getItem("five-percent-language")==="en"?"en":"hu";
+function copyButton(value){const button=document.createElement("button");button.className="copy";button.textContent=lang==="en"?"Copy prompt":"Prompt másolása";button.onclick=async()=>{try{await navigator.clipboard.writeText(value);button.textContent=lang==="en"?"Copied":"Másolva";}catch{const area=document.createElement("textarea");area.value=value;document.body.append(area);area.select();document.execCommand("copy");area.remove();button.textContent="✓";}};return button;}
+function profileText(actor){const role=actor.role;return lang==="en"?[role,enProfiles[actor.id]||"", "Character ID: "+actor.id, "World: Five Percent. Remain consistent with this role, the crew's relationships and the mystery of Unseen Physics."] .join("\n"):[actor.name+" / "+role,actor.work,actor.background, "Beszédstílus: "+actor.voice,"Mintamondat: "+actor.sample,"Karakterazonosító: "+actor.id].join("\n");}
+function render(){
+ $("lang").value=lang;document.documentElement.lang=lang;document.querySelectorAll("[data-hu]").forEach(el=>{el.textContent=el.dataset[lang];});
+ const q=$("search").value.toLowerCase();const target=$("profiles");target.replaceChildren();
+ const categories=lang==="en"?["Sector 7 crew","Wyoming station","UP Laboratory","Robots & androids"]:["7-es Kvadráns legénysége","Wyoming állomás","UP Labor","Robotok és androidok"];
+ for(let i=0;i<4;i++){
+  const matching=actors.filter(a=>a.sheet===i && [a.id,a.role,a.name,enProfiles[a.id]].join(" ").toLowerCase().includes(q));
+  if(!matching.length)continue;
+  const title=document.createElement("h3");title.className="groupTitle";title.textContent=categories[i];target.append(title);
+  for(const a of matching){const el=document.createElement("article");el.className="profile";const h=document.createElement("h3");h.textContent=lang==="en"?a.role:a.name;const id=document.createElement("small");id.textContent=a.id;const p=document.createElement("p");p.textContent=lang==="en"?enProfiles[a.id]:a.work;el.append(h,id,p,copyButton(profileText(a)));target.append(el);}
+ }
+ const cards=$("worldCards");cards.replaceChildren();
+ for(const item of contexts){const card=document.createElement("article");card.className="infoCard";const title=document.createElement("h3");title.textContent=item.name;const p=document.createElement("div");p.className="prompt";p.textContent=item[lang];card.append(title,p,copyButton(item[lang]));cards.append(card);}
+}
+$("lang").addEventListener("change",e=>{lang=e.target.value;localStorage.setItem("five-percent-language",lang);render();});
+$("search").addEventListener("input",render);
+render();
+</script>
+</body>
+</html>
