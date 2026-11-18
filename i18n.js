@@ -74,7 +74,7 @@ if(en){
    const name=actor.id==="crew.captain"?"Captain":role;
    actorRoles[actor.id]=name;
    translatedField(actor,"name",name);
-   translatedField(actor,"work",englishProfiles[actor.id]||("I work as "+role.toLowerCase()+".")");
+   translatedField(actor,"work",englishProfiles[actor.id]||("I work as "+role.toLowerCase()+ "."));
    translatedField(actor,"sample","I'm the "+role.toLowerCase()+". Tell me what you need to know.");
  });
  questBook.steps.forEach(step=>localizeStep(step,steps[step.id]));
