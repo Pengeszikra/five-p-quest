@@ -560,12 +560,12 @@ const sayings={
   "up.snp-physicist":"Épp két mérés közé estél. Van kedved belenézni, vagy inkább kérdeznél?",
 };
 const topicWords={
-  work:/munk|foglalkoz|beosztas|mi a dolgod|mit csinalsz|szereped/,
+  work:/work|job|what do you do|occupation|munk|foglalkoz|beosztas|mi a dolgod|mit csinalsz|szereped/,
   drive:/snp|hajtas|inverzit|eredet|ki talalta|up tech|technolog/,
   place:/wyoming|allomas|kvadrans|hol |merre|hova|zsilip|dokkol|dokk|barban|hangar|mi van itt/,
-  mood:/foglalkoztat|veszely|felel|szerinted|velemeny|pletyk|mi ujsag|miert/,
-  hello:/^(szia|szervusz|hello|helo|udv|jo napot|szevasz)[ !?.]*$/,
-  thanks:/kosz|koszon|viszlat|szia$/,
+  mood:/feel|worr|opinion|news|foglalkoztat|veszely|felel|szerinted|velemeny|pletyk|mi ujsag|miert/,
+  hello:/^(hi|hey|hello|szia|szervusz|hello|helo|udv|jo napot|szevasz)[ !?.]*$/,
+  thanks:/thank|bye|kosz|koszon|viszlat|szia$/,
 };
 function dialogueKey(npc){return state.active+"|"+npc.actor.id;}
 function openChat(npc) {
@@ -579,7 +579,7 @@ function openChat(npc) {
   $("tokens").querySelector(`[data-actor="${npc.actor.id}"]`)?.classList.add("is-contact");
   const key=dialogueKey(npc);
   if(!state.logs.has(key)){
-    const greeting=sayings[npc.actor.id]||greetingFor(npc.actor);
+    const greeting=window.gameLanguage==="en"?greetingFor(npc.actor):sayings[npc.actor.id]||greetingFor(npc.actor);
     state.logs.set(key,[{who:npc.actor.name,text:greeting}]);
   }
   paintLog();
@@ -654,7 +654,7 @@ function answer(npc,topic) {
       ? "Most a Wyomingon vagyunk, itt van a bár, a dokk meg az UP Labor. A 7-es Kvadránsra a beszállón át jutsz."
       : "Ez a 7-es Kvadráns. A híd és a lakótér a folyosó egyik oldalán, a géptér és a hangár a másikon. A zsilipen át visszaérsz a Wyomingra.";
   }
-  if(topic==="hello")return sayings[actor.id]||greetingFor(actor);
+  if(topic==="hello")return window.gameLanguage==="en"?greetingFor(actor):sayings[actor.id]||greetingFor(actor);
   if(topic==="thanks")return robot?"Nyugtázva.":"Szívesen. Jó utat odakint.";
   return (robot?"Téma nincs a nyilvántartásban. ":"Erről nem tudok biztosat mondani. ")+actor.work;
 }
@@ -694,7 +694,7 @@ async function requestGroq(payload) {
   try {
     const response=await fetch("/api/dialogue",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      signal:AbortSignal.timeout(21_000),body:JSON.stringify(payload),
+      signal:AbortSignal.timeout(21_000),body:JSON.stringify({...payload,lang:window.gameLanguage||"hu"}),
     });
     if(!response.ok)throw new Error("Groq unavailable");
     const data=await response.json();
