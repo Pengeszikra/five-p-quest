@@ -639,6 +639,17 @@ const driveByActor={
 function answer(npc,topic) {
   const actor=npc.actor;
   const robot=actor.id.startsWith("robot.");
+  if(window.gameLanguage==="en"){
+    if(topic==="work")return actor.work;
+    if(topic==="mood")return actor.sample;
+    if(topic==="drive")return "We can operate and measure SNP technology, but nobody knows its true origin. UP is still investigating.";
+    if(topic==="place")return state.mapId==="wyoming"
+      ?"This is Wyoming station. The bar, dock, UP Lab and boarding airlock are all here."
+      :"This is Sector 7. The bridge, crew quarters, engine room and hangar connect to the boarding airlock.";
+    if(topic==="hello")return greetingFor(actor);
+    if(topic==="thanks")return robot?"Acknowledged.":"You're welcome. Safe travels.";
+    return "I cannot confirm that. "+actor.work;
+  }
   if(topic==="work")return actor.work;
   if(topic==="mood")return actor.sample;
   if(topic==="drive"){
